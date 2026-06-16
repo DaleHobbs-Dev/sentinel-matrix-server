@@ -1,0 +1,9 @@
+asgiref==3.11.1
+Django==6.0.6
+django-cors-headers==4.9.0
+django-safedelete==1.4.1
+djangorestframework==3.17.1
+packaging==26.2
+pillow==12.2.0
+setuptools==82.0.1
+sqlparse==0.5.5
