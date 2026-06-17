@@ -1,0 +1,13 @@
+[
+    {
+        "model": "sentinelapi.instructor",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "bio": "I am a math instructor with a passion for teaching.",
+            "profile_picture": "https://example.com/profile_pictures/dale_hobbs.jpg",
+            "subject_taught": "Mathematics",
+            "university": "Example University"
+        }
+    }
+]
