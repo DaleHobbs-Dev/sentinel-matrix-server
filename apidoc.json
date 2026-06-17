@@ -1,0 +1,7 @@
+{
+    "name": "Sentinel Matrix Server",
+    "version": "1.0.0",
+    "description": "A server for the Sentinel Matrix application.",
+    "author": "Dale Hobbs",
+    "license": "MIT"
+}
