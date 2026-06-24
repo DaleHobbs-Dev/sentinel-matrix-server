@@ -19,9 +19,13 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
+from sentinelapi.views.auth import LoginView, RegisterView
+
 router = routers.DefaultRouter(trailing_slash=False)
 
 urlpatterns = [
+    path("login", LoginView.as_view(), name="login"),
+    path("register", RegisterView.as_view(), name="register"),
     path("", include(router.urls)),
     path("admin/", admin.site.urls),
 ]
