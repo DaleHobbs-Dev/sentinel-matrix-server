@@ -1,0 +1,19 @@
+{
+	"id": "a1b2c3d4-2222-4f5e-9a8b-000000000002",
+	"name": "Student Risk Dashboard - Local",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "authtoken",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		}
+	],
+	"_yaak_variable_scope": "environment"
+}

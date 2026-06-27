@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-1111-4f5e-9a8b-000000000001",
+		"name": "Student Risk Dashboard API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "API collection for the Student Risk Dashboard capstone. Grows as new endpoints are added — re-export from Postman and overwrite this file each time."
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const data = pm.response.json();",
+									"    pm.environment.set('authtoken', data.token);",
+									"    console.log('authtoken saved:', data.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"MissPrissy1234\",\n    \"password\": \"Admin8*Password\",\n    \"email\": \"jane.doe@example.com\",\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Doe\",\n    \"bio\": \"\",\n    \"profile_picture\": \"\",\n    \"subject_taught\": \"Algebra I\",\n    \"university\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "Create a new instructor account.\n\nRequired: username, password, email, first_name, last_name.\nOptional: bio, profile_picture, subject_taught, university.\n\nReturns 201 with { token, user } on success. Validation errors (duplicate username/email, weak password) return 400 with field-level messages."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const data = pm.response.json();",
+									"    pm.environment.set('authtoken', data.token);",
+									"    console.log('authtoken saved:', data.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"MissPrissy1234\",\n    \"password\": \"Admin8*Password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Authenticate an existing user.\n\nReturns 200 with { token, user } on success. Invalid credentials or inactive account return a 400 with a validation error message."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
