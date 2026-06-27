@@ -1,13 +1,13 @@
-"""Views and serializers for authentication and authorization."""
+"""Views for User related actions."""
 
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 
-from rest_framework import permissions, serializers, status
+from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from sentinelapi.models import Instructor
@@ -15,11 +15,9 @@ from sentinelapi.models import Instructor
 User = get_user_model()
 
 
-# Blueprint for creating serializer user objects
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for public user data."""
 
-    # Nested configuration for the User model to specify which fields to include in the serialized output.
     class Meta:
         """Meta class for UserSerializer."""
 
@@ -64,14 +62,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate_password(self, value):
-        """Validate the password using Django's built-in validators."""
+        """Perform password validation using Django's built-in validators."""
         user = User(
             username=self.initial_data.get("username"),
             email=self.initial_data.get("email"),
             first_name=self.initial_data.get("first_name"),
             last_name=self.initial_data.get("last_name"),
         )
-
         try:
             validate_password(value, user=user)
         except DjangoValidationError as e:
@@ -79,13 +76,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        """Ensure that the email is unique (case-insensitive)."""
+        """Perform case-insensitive email uniqueness validation."""
         if User.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError("A user with this email already exists.")
         return value
 
     def validate_username(self, value):
-        """Ensure that the username is unique (case-insensitive)."""
+        """Perform case-insensitive username uniqueness validation."""
         if User.objects.filter(username__iexact=value).exists():
             raise serializers.ValidationError(
                 "A user with this username already exists."
@@ -102,8 +99,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
         password = validated_data.pop("password")
 
-        # Use a transaction to ensure that both the User and Instructor are created together atomically.
-        # If either creation fails, the transaction will be rolled back.
         with transaction.atomic():
             user = User.objects.create_user(password=password, **validated_data)
             Instructor.objects.create(user=user, **instructor_data)
@@ -118,7 +113,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, trim_whitespace=False)
 
     def validate(self, attrs):
-        """Validate the username and password."""
+        """Validate username and password for login."""
         try:
             user = User.objects.get(username__iexact=attrs.get("username"))
         except (User.DoesNotExist, User.MultipleObjectsReturned):
@@ -143,45 +138,45 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
-# module-level helper function to generate the authorization response
-# utilized in both the RegisterView and LoginView classes
-# accepts a user object and an optional HTTP status code (defaulting to 200 OK)
 def _auth_response(user, http_status=status.HTTP_200_OK):
-    """Return the shared auth response shape used by login and register."""
-
+    """Return the shared auth response shape used by register and login."""
     token, _created = Token.objects.get_or_create(user=user)
-
     return Response(
-        {
-            "token": token.key,
-            "user": UserSerializer(user).data,
-        },
+        {"token": token.key, "user": UserSerializer(user).data},
         status=http_status,
     )
 
 
-class RegisterView(APIView):
-    """Create an instructor account and return an auth token."""
+class UserViewSet(viewsets.ViewSet):
+    """ViewSet for user-related actions: register, login, and own profile."""
 
-    permission_classes = [permissions.AllowAny]
+    queryset = User.objects.all()
 
-    def post(self, request):
-        """Handle POST requests to register a new user."""
+    def get_permissions(self):
+        """Public auth endpoints are open; everything else requires authentication."""
+        if self.action in ["register_account", "user_login"]:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    # Custom action for registration
+    @action(detail=False, methods=["post"], url_path="register")
+    def register_account(self, request):
+        """Register a new user account and associated instructor profile."""
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
         return _auth_response(user, status.HTTP_201_CREATED)
 
-
-class LoginView(APIView):
-    """Authenticate a user and return an auth token."""
-
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        """Handle POST requests to log in a user."""
+    # Custom action for login
+    @action(detail=False, methods=["post"], url_path="login")
+    def user_login(self, request):
+        """Authenticate a user and return an auth token."""
         serializer = LoginSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-
         return _auth_response(serializer.validated_data["user"])
+
+    # Custom action for retrieving the authenticated user's own profile
+    @action(detail=False, methods=["get"], url_path="me")
+    def me(self, request):
+        """Return the authenticated user's own profile."""
+        return Response(UserSerializer(request.user).data)

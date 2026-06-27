@@ -1,0 +1,8 @@
+{
+  "reportAbstractUsage": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportCallIssue": "none",
+  "reportMissingTypeStubs": "none",
+  "reportOperatorIssue": "none",
+  "reportIncompatibleVariableOverride": "none"
+}
