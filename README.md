@@ -91,52 +91,52 @@ sudo apt install -y python3-venv python3-pip
 
 1. Clone the repository:
 
-	```bash
-	git clone git@github.com:DaleHobbs-Dev/sentinel-matrix-server.git
-	cd sentinel-matrix-server
-	```
+ ```bash
+ git clone git@github.com:DaleHobbs-Dev/sentinel-matrix-server.git
+ cd sentinel-matrix-server
+ ```
 
-2. Create the virtual environment:
+1. Create the virtual environment:
 
-	```bash
-	python3 -m venv sentinel-env
-	```
+ ```bash
+ python3 -m venv sentinel-env
+ ```
 
-3. Activate the virtual environment:
+1. Activate the virtual environment:
 
-	```bash
-	source sentinel-env/bin/activate
-	```
+ ```bash
+ source sentinel-env/bin/activate
+ ```
 
-4. Upgrade packaging tools (recommended):
+1. Upgrade packaging tools (recommended):
 
-	```bash
-	python -m pip install --upgrade pip setuptools wheel
-	```
+ ```bash
+ python -m pip install --upgrade pip setuptools wheel
+ ```
 
-5. Install dependencies:
+1. Install dependencies:
 
-	```bash
-	pip install -r requirements.txt
-	```
+ ```bash
+ pip install -r requirements.txt
+ ```
 
-6. Apply migrations:
+1. Apply migrations:
 
-	```bash
-	python manage.py migrate
-	```
+ ```bash
+ python manage.py migrate
+ ```
 
-7. Seed the database:
+1. Seed the database:
 
-	```bash
-	./seed_data.sh
-	```
+ ```bash
+ ./seed_data.sh
+ ```
 
-8. Start the development server:
+1. Start the development server:
 
-	```bash
-	python manage.py runserver
-	```
+ ```bash
+ python manage.py runserver
+ ```
 
 The API is available locally at:
 
