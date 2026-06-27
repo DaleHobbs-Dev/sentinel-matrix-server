@@ -10,7 +10,7 @@
 		},
 		{
 			"key": "authtoken",
-			"value": "",
+			"value": "Token 9ba45f09651c5b0c404f37a2d2572c026c146688",
 			"type": "secret",
 			"enabled": true
 		}

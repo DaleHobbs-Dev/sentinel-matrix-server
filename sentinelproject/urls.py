@@ -19,13 +19,17 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from sentinelapi.views.auth import LoginView, RegisterView
+from sentinelapi.views.user import UserViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
+router.register(r"users", UserViewSet, basename="user")
 
 urlpatterns = [
-    path("login", LoginView.as_view(), name="login"),
-    path("register", RegisterView.as_view(), name="register"),
+    path("login", UserViewSet.as_view({"post": "user_login"}), name="login"),
+    path(
+        "register", UserViewSet.as_view({"post": "register_account"}), name="register"
+    ),
+    path("me", UserViewSet.as_view({"get": "me"}), name="me"),
     path("", include(router.urls)),
     path("admin/", admin.site.urls),
 ]
