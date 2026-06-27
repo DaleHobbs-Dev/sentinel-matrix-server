@@ -1,10 +1,9 @@
 [
     {
-        "model": "auth.user",
+        "model": "sentinelapi.user",
         "pk": 1,
         "fields": {
             "password": "pbkdf2_sha256$1200000$dTub3oO5u1mFmCbYV9pHqa$wTZhhjpfKI3BxtmvkIO0W88YKB2CMKxZqq+Q3MN0x90=",
-            "username": "ssj4mathgenius",
             "first_name": "Dale",
             "last_name": "Hobbs",
             "email": "dale.hobbs@example.com",

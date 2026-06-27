@@ -1,13 +1,15 @@
 """Model for Instructors"""
 
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 
 
 class Instructor(models.Model):
     """Represents an instructor in the application"""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Referencing AUTH_USER_MODEL keeps this relationship compatible with the
+    # custom user model configured in settings.py.
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.URLField(blank=True, null=True)
     subject_taught = models.TextField(blank=True, null=True)

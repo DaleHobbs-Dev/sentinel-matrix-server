@@ -1,9 +1,11 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from sentinelapi.models import Instructor
+
+User = get_user_model()
 
 
 class AuthTests(APITestCase):
@@ -11,7 +13,6 @@ class AuthTests(APITestCase):
         response = self.client.post(
             "/register",
             {
-                "username": "grace",
                 "password": "StrongPass1!",
                 "email": "grace@example.com",
                 "first_name": "Grace",
@@ -24,9 +25,9 @@ class AuthTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("token", response.data)
-        self.assertEqual(response.data["user"]["username"], "grace")
+        self.assertEqual(response.data["user"]["email"], "grace@example.com")
 
-        user = User.objects.get(username="grace")
+        user = User.objects.get(email="grace@example.com")
         self.assertTrue(user.check_password("StrongPass1!"))
         self.assertTrue(Token.objects.filter(user=user).exists())
         self.assertTrue(
@@ -41,7 +42,6 @@ class AuthTests(APITestCase):
         response = self.client.post(
             "/register",
             {
-                "username": "ada",
                 "password": "password",
                 "email": "ada@example.com",
                 "first_name": "Ada",
@@ -52,18 +52,17 @@ class AuthTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
-        self.assertFalse(User.objects.filter(username="ada").exists())
+        self.assertFalse(User.objects.filter(email="ada@example.com").exists())
         self.assertEqual(Instructor.objects.count(), 0)
 
-    def test_register_rejects_username_with_different_casing(self):
-        User.objects.create_user(username="Grace", password="StrongPass1!")
+    def test_register_rejects_email_with_different_casing(self):
+        User.objects.create_user(email="Grace@Example.com", password="StrongPass1!")
 
         response = self.client.post(
             "/register",
             {
-                "username": "grace",
                 "password": "AnotherStrong2!",
-                "email": "another-grace@example.com",
+                "email": "grace@example.com",
                 "first_name": "Grace",
                 "last_name": "Hopper",
             },
@@ -71,12 +70,11 @@ class AuthTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("username", response.data)
-        self.assertEqual(User.objects.filter(username__iexact="grace").count(), 1)
+        self.assertIn("email", response.data)
+        self.assertEqual(User.objects.filter(email__iexact="grace@example.com").count(), 1)
 
     def test_login_returns_existing_token(self):
         user = User.objects.create_user(
-            username="alan",
             password="StrongPass1!",
             email="alan@example.com",
             first_name="Alan",
@@ -85,35 +83,37 @@ class AuthTests(APITestCase):
 
         response = self.client.post(
             "/login",
-            {"username": "alan", "password": "StrongPass1!"},
+            {"email": "alan@example.com", "password": "StrongPass1!"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["user"]["username"], user.username)
+        self.assertEqual(response.data["user"]["email"], user.email)
         self.assertEqual(response.data["token"], Token.objects.get(user=user).key)
 
-    def test_login_username_is_case_insensitive(self):
+    def test_login_email_is_case_insensitive(self):
         user = User.objects.create_user(
-            username="Katherine",
+            email="Katherine@Example.com",
             password="StrongPass1!",
         )
 
         response = self.client.post(
             "/login",
-            {"username": "kAtHeRiNe", "password": "StrongPass1!"},
+            {"email": "kAtHeRiNe@example.COM", "password": "StrongPass1!"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["user"]["username"], user.username)
+        self.assertEqual(response.data["user"]["email"], user.email)
 
     def test_login_rejects_invalid_credentials(self):
-        User.objects.create_user(username="katherine", password="StrongPass1!")
+        User.objects.create_user(
+            email="katherine@example.com", password="StrongPass1!"
+        )
 
         response = self.client.post(
             "/login",
-            {"username": "katherine", "password": "wrong-password"},
+            {"email": "katherine@example.com", "password": "wrong-password"},
             format="json",
         )
 

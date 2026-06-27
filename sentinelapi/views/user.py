@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Meta class for UserSerializer."""
 
         model = User
-        fields = ("id", "username", "email", "first_name", "last_name")
+        fields = ("id", "email", "first_name", "last_name")
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -44,7 +44,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         model = User
         fields = (
-            "username",
             "password",
             "email",
             "first_name",
@@ -64,7 +63,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         """Perform password validation using Django's built-in validators."""
         user = User(
-            username=self.initial_data.get("username"),
             email=self.initial_data.get("email"),
             first_name=self.initial_data.get("first_name"),
             last_name=self.initial_data.get("last_name"),
@@ -77,16 +75,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         """Perform case-insensitive email uniqueness validation."""
+        value = User.objects.normalize_email(value).lower()
         if User.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError("A user with this email already exists.")
-        return value
-
-    def validate_username(self, value):
-        """Perform case-insensitive username uniqueness validation."""
-        if User.objects.filter(username__iexact=value).exists():
-            raise serializers.ValidationError(
-                "A user with this username already exists."
-            )
         return value
 
     def create(self, validated_data):
@@ -107,23 +98,17 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    """Serializer for username/password login."""
+    """Serializer for email/password login."""
 
-    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True, trim_whitespace=False)
 
     def validate(self, attrs):
-        """Validate username and password for login."""
-        try:
-            user = User.objects.get(username__iexact=attrs.get("username"))
-        except (User.DoesNotExist, User.MultipleObjectsReturned):
-            raise serializers.ValidationError(
-                "Unable to log in with provided credentials."
-            )
-
+        """Validate email and password for login."""
+        email = User.objects.normalize_email(attrs.get("email")).lower()
         user = authenticate(
             request=self.context.get("request"),
-            username=user.get_username(),
+            email=email,
             password=attrs.get("password"),
         )
 

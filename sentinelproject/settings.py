@@ -44,6 +44,10 @@ INSTALLED_APPS = [
     "safedelete",  # allows for soft deletion of data
 ]
 
+# Use Sentinel's email-first user instead of Django's username-based default.
+# This must be set before creating the project's first database migrations.
+AUTH_USER_MODEL = "sentinelapi.User"
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
