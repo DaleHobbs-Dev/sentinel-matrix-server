@@ -3,9 +3,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from sentinelapi.models import Instructor, User
+from sentinelapi.models import Instructor, User, Student
 
 admin.site.register(Instructor)
+admin.site.register(Student)
 
 
 @admin.register(User)

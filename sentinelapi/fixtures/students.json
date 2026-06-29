@@ -1,0 +1,242 @@
+[
+  {
+    "model": "sentinelapi.student",
+    "pk": 1,
+    "fields": {
+      "first_name": "Maya",
+      "last_name": "Thompson",
+      "student_id": "A00000001",
+      "email": "maya.thompson@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-05-12"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 2,
+    "fields": {
+      "first_name": "Liam",
+      "last_name": "Carter",
+      "student_id": "A00000002",
+      "email": "liam.carter@example.edu",
+      "prior_academic_standing": "at risk",
+      "enrollment_date": "2025-05-27"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 3,
+    "fields": {
+      "first_name": "Sofia",
+      "last_name": "Ramirez",
+      "student_id": "A00000003",
+      "email": "sofia.ramirez@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-06-03"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 4,
+    "fields": {
+      "first_name": "Noah",
+      "last_name": "Williams",
+      "student_id": "A00000004",
+      "email": "noah.williams@example.edu",
+      "prior_academic_standing": "at risk",
+      "enrollment_date": "2025-06-18"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 5,
+    "fields": {
+      "first_name": "Ava",
+      "last_name": "Nguyen",
+      "student_id": "A00000005",
+      "email": "ava.nguyen@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-07-01"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 6,
+    "fields": {
+      "first_name": "Ethan",
+      "last_name": "Brooks",
+      "student_id": "A00000006",
+      "email": "ethan.brooks@example.edu",
+      "prior_academic_standing": "at risk",
+      "enrollment_date": "2025-07-09"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 7,
+    "fields": {
+      "first_name": "Isabella",
+      "last_name": "Johnson",
+      "student_id": "A00000007",
+      "email": "isabella.johnson@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-07-17"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 8,
+    "fields": {
+      "first_name": "Lucas",
+      "last_name": "Patel",
+      "student_id": "A00000008",
+      "email": "lucas.patel@example.edu",
+      "prior_academic_standing": "at risk",
+      "enrollment_date": "2025-07-28"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 9,
+    "fields": {
+      "first_name": "Amelia",
+      "last_name": "Davis",
+      "student_id": "A00000009",
+      "email": "amelia.davis@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-08-04"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 10,
+    "fields": {
+      "first_name": "Mateo",
+      "last_name": "Hernandez",
+      "student_id": "A00000010",
+      "email": "mateo.hernandez@example.edu",
+      "prior_academic_standing": "at risk",
+      "enrollment_date": "2025-08-11"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 11,
+    "fields": {
+      "first_name": "Harper",
+      "last_name": "Wilson",
+      "student_id": "A00000011",
+      "email": "harper.wilson@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-08-19"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 12,
+    "fields": {
+      "first_name": "Elijah",
+      "last_name": "Kim",
+      "student_id": "A00000012",
+      "email": "elijah.kim@example.edu",
+      "prior_academic_standing": "at risk",
+      "enrollment_date": "2025-08-30"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 13,
+    "fields": {
+      "first_name": "Zoe",
+      "last_name": "Anderson",
+      "student_id": "A00000013",
+      "email": "zoe.anderson@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-11-05"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 14,
+    "fields": {
+      "first_name": "James",
+      "last_name": "Robinson",
+      "student_id": "A00000014",
+      "email": "james.robinson@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-11-19"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 15,
+    "fields": {
+      "first_name": "Layla",
+      "last_name": "Martinez",
+      "student_id": "A00000015",
+      "email": "layla.martinez@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-12-02"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 16,
+    "fields": {
+      "first_name": "Benjamin",
+      "last_name": "Clark",
+      "student_id": "A00000016",
+      "email": "benjamin.clark@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-12-15"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 17,
+    "fields": {
+      "first_name": "Nora",
+      "last_name": "Lewis",
+      "student_id": "A00000017",
+      "email": "nora.lewis@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2025-12-29"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 18,
+    "fields": {
+      "first_name": "Henry",
+      "last_name": "Walker",
+      "student_id": "A00000018",
+      "email": "henry.walker@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2026-01-06"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 19,
+    "fields": {
+      "first_name": "Chloe",
+      "last_name": "Young",
+      "student_id": "A00000019",
+      "email": "chloe.young@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2026-01-14"
+    }
+  },
+  {
+    "model": "sentinelapi.student",
+    "pk": 20,
+    "fields": {
+      "first_name": "Daniel",
+      "last_name": "Allen",
+      "student_id": "A00000020",
+      "email": "daniel.allen@example.edu",
+      "prior_academic_standing": "good",
+      "enrollment_date": "2026-01-20"
+    }
+  }
+]
