@@ -21,9 +21,11 @@ from rest_framework import routers
 
 from sentinelapi.views.user import UserViewSet
 from sentinelapi.views.student import StudentViewSet
+from sentinelapi.views.course import CourseViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r"students", StudentViewSet, basename="student")
+router.register(r"courses", CourseViewSet, basename="course")
 
 urlpatterns = [
     path("login", UserViewSet.as_view({"post": "user_login"}), name="login"),

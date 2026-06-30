@@ -13,8 +13,10 @@ Table courses {
   id integer [primary key]
   instructor_id integer [not null]
   course_name varchar [not null]
+  description text
   term varchar
   is_active boolean
+  course_image_url varchar
   created_at timestamp
 }
 
