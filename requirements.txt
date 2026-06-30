@@ -9,3 +9,4 @@ setuptools==82.0.1
 sqlparse==0.5.5
 django-stubs==5.x.x
 djangorestframework-stubs==3.x.x
+pylint-django

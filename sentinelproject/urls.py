@@ -20,9 +20,10 @@ from django.urls import path, include
 from rest_framework import routers
 
 from sentinelapi.views.user import UserViewSet
+from sentinelapi.views.student import StudentViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r"users", UserViewSet, basename="user")
+router.register(r"students", StudentViewSet, basename="student")
 
 urlpatterns = [
     path("login", UserViewSet.as_view({"post": "user_login"}), name="login"),

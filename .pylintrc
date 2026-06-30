@@ -1,2 +1,6 @@
+[MASTER]
+load-plugins=pylint_django
+django-settings-module=sentinelproject.settings
+
 [FORMAT]
 good-names=i,j,k,ex,pk

@@ -143,8 +143,6 @@ class UserViewSet(viewsets.ViewSet):
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
-    # Custom action for registration
-    @action(detail=False, methods=["post"], url_path="register")
     def register_account(self, request):
         """Register a new user account and associated instructor profile."""
         serializer = RegisterSerializer(data=request.data)
@@ -152,16 +150,12 @@ class UserViewSet(viewsets.ViewSet):
         user = serializer.save()
         return _auth_response(user, status.HTTP_201_CREATED)
 
-    # Custom action for login
-    @action(detail=False, methods=["post"], url_path="login")
     def user_login(self, request):
         """Authenticate a user and return an auth token."""
         serializer = LoginSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         return _auth_response(serializer.validated_data["user"])
 
-    # Custom action for retrieving the authenticated user's own profile
-    @action(detail=False, methods=["get"], url_path="me")
     def me(self, request):
         """Return the authenticated user's own profile."""
         return Response(UserSerializer(request.user).data)
