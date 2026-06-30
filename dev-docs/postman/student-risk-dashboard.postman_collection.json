@@ -303,7 +303,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"course_name\": \"Introduction to Literature\",\n    \"description\": \"An introductory course exploring fiction, poetry, drama, and literary analysis.\",\n    \"term\": \"Spring 2026\",\n    \"course_image_url\": \"https://picsum.photos/seed/introduction-to-literature/800/500\",\n    \"is_active\": true\n}",
+							"raw": "{\n    \"course_name\": \"Introduction to Literature\",\n    \"description\": \"An introductory course exploring fiction, poetry, drama, and literary analysis.\",\n    \"term\": \"Spring 2026\",\n    \"course_image_url\": \"https://picsum.photos/seed/introduction-to-literature/800/500\",}",
 							"options": {
 								"raw": {
 									"language": "json"
