@@ -106,6 +106,96 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Students",
+			"item": [
+				{
+					"name": "List Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/students",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students"
+							]
+						},
+						"description": "Returns a list of all students ordered by last name then first name.\n\nRequires authentication. Returns 200 with an array of student objects, each containing: id, first_name, last_name, student_id, email, prior_academic_standing, enrollment_date."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/students?search=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": ""
+								}
+							]
+						},
+						"description": "Filters the student list by a search string. Matches against first_name, last_name, student_id, and email (case-insensitive).\n\nRequires authentication. Returns 200 with a filtered array. If no students match, returns an empty array."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/students/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						},
+						"description": "Returns a single student by their primary key.\n\nRequires authentication. Returns 200 with the student object on success. Returns 404 with { \"detail\": \"Student not found.\" } if no student exists with that ID."
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
