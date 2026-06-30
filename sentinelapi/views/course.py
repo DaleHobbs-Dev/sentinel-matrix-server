@@ -44,10 +44,15 @@ class CourseViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
-        """Handle GET requests to list all Courses."""
+        """Handle GET requests to list all requesting Instructor's Courses."""
+
+        courses = Course.objects.all().filter(instructor=request.user)
+
+        active_param = request.query_params.get("is_active", None)
+        if active_param is not None:
+            courses = courses.filter(is_active=active_param.lower() == "true")
 
         search = request.query_params.get("search", None)
-        courses = Course.objects.all()
 
         if search:
             courses = courses.filter(

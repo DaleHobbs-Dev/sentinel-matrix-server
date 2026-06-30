@@ -15,14 +15,26 @@ from sentinelapi.models import Instructor
 User = get_user_model()
 
 
+class InstructorSerializer(serializers.ModelSerializer):
+    """Serializer for Instructor model."""
+
+    class Meta:
+        """Meta class for InstructorSerializer."""
+
+        model = Instructor
+        fields = ("id", "bio", "profile_picture", "subject_taught", "university")
+
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for public user data."""
+
+    instructor = InstructorSerializer(read_only=True)
 
     class Meta:
         """Meta class for UserSerializer."""
 
         model = User
-        fields = ("id", "email", "first_name", "last_name")
+        fields = ("id", "email", "first_name", "last_name", "instructor")
 
 
 class RegisterSerializer(serializers.ModelSerializer):
