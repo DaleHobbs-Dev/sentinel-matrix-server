@@ -2,3 +2,4 @@
 
 from .user import UserViewSet
 from .student import StudentViewSet
+from .course import CourseViewSet

@@ -196,6 +196,255 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "List Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/courses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses"
+							]
+						},
+						"description": "Returns a list of all courses.\n\nRequires authentication. Returns 200 with an array of course objects."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/courses/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns a single course by its primary key.\n\nRequires authentication. Returns 200 with the course object or 404 if the course does not exist."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/courses?search=calculus",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "calculus"
+								}
+							]
+						},
+						"description": "Filters courses by a case-insensitive search string. Matches against the course name and description.\n\nRequires authentication. Returns 200 with a filtered array."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_name\": \"Introduction to Literature\",\n    \"description\": \"An introductory course exploring fiction, poetry, drama, and literary analysis.\",\n    \"term\": \"Spring 2026\",\n    \"course_image_url\": \"https://picsum.photos/seed/introduction-to-literature/800/500\",\n    \"is_active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/courses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses"
+							]
+						},
+						"description": "Creates a course owned by the authenticated user. The instructor field is assigned from the authentication token and should not be included in the body.\n\nReturns 201 on success or 400 for invalid fields."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Course",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_name\": \"College Algebra\",\n    \"description\": \"An updated introduction to equations, functions, graphs, and algebraic models.\",\n    \"term\": \"Spring 2026\",\n    \"course_image_url\": \"https://picsum.photos/seed/college-algebra-updated/800/500\",\n    \"is_active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/courses/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Replaces all editable fields on a course. Only the instructor who owns the course can update it.\n\nReturns 200 on success, 403 for a non-owner, 404 if missing, or 400 for invalid fields."
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Course",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_active\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/courses/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Updates only the supplied course fields. Only the instructor who owns the course can update it.\n\nReturns 200 on success, 403 for a non-owner, 404 if missing, or 400 for invalid fields."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Course",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/courses/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deletes a course. Only the instructor who owns the course can delete it.\n\nReturns 204 on success, 403 for a non-owner, or 404 if the course does not exist."
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

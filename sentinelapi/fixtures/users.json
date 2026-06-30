@@ -11,5 +11,18 @@
             "is_active": true,
             "is_superuser": true
         }
+    },
+    {
+        "model": "sentinelapi.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$dTub3oO5u1mFmCbYV9pHqa$wTZhhjpfKI3BxtmvkIO0W88YKB2CMKxZqq+Q3MN0x90=",
+            "first_name": "Maya",
+            "last_name": "Bennett",
+            "email": "maya.bennett@example.com",
+            "is_staff": false,
+            "is_active": true,
+            "is_superuser": false
+        }
     }
 ]

@@ -9,5 +9,16 @@
             "subject_taught": "Mathematics",
             "university": "Example University"
         }
+    },
+    {
+        "model": "sentinelapi.instructor",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "bio": "I am an English instructor who enjoys helping students become confident academic writers.",
+            "profile_picture": "https://picsum.photos/seed/maya-bennett/400/400",
+            "subject_taught": "English",
+            "university": "Example University"
+        }
     }
 ]

@@ -1,0 +1,44 @@
+[
+    {
+        "model": "sentinelapi.course",
+        "pk": 1,
+        "fields": {
+            "instructor": 1,
+            "course_name": "College Algebra",
+            "description": "An introductory course covering algebraic expressions, equations, inequalities, functions, graphs, and polynomial and rational models.",
+            "term": "Spring 2026",
+            "is_active": true,
+            "course_image_url": "https://picsum.photos/seed/college-algebra/800/500",
+            "created_at": "2024-06-01T10:00:00Z",
+            "updated_at": "2024-06-01T10:00:00Z"
+        }
+    },
+    {
+        "model": "sentinelapi.course",
+        "pk": 2,
+        "fields": {
+            "instructor": 1,
+            "course_name": "Applied Calculus",
+            "description": "A practical introduction to limits, derivatives, integrals, and their applications in business, economics, and the sciences.",
+            "term": "Spring 2026",
+            "is_active": true,
+            "course_image_url": "https://picsum.photos/seed/applied-calculus/800/500",
+            "created_at": "2024-06-01T10:00:00Z",
+            "updated_at": "2024-06-01T10:00:00Z"
+        }
+    },
+    {
+        "model": "sentinelapi.course",
+        "pk": 3,
+        "fields": {
+            "instructor": 2,
+            "course_name": "English Composition 1",
+            "description": "An introductory writing course focused on the writing process, clear thesis development, organization, revision, and academic research.",
+            "term": "Spring 2026",
+            "is_active": true,
+            "course_image_url": "https://picsum.photos/seed/english-composition/800/500",
+            "created_at": "2026-01-01T10:00:00Z",
+            "updated_at": "2026-01-01T10:00:00Z"
+        }
+    }
+]
