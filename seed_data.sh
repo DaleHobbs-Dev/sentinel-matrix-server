@@ -13,3 +13,5 @@ python manage.py loaddata courses
 python manage.py loaddata enrollments
 python manage.py loaddata assessment_types
 python manage.py loaddata course_assessment_types
+python manage.py loaddata assessments
+python manage.py loaddata student_assessments

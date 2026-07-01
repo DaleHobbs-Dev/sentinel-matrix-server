@@ -3,11 +3,26 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from sentinelapi.models import Instructor, User, Student, Course
+from sentinelapi.models import (
+    Instructor,
+    User,
+    Student,
+    Course,
+    AssessmentType,
+    CourseAssessmentType,
+    Assessment,
+    Enrollment,
+    StudentAssessment,
+)
 
 admin.site.register(Instructor)
 admin.site.register(Student)
 admin.site.register(Course)
+admin.site.register(CourseAssessmentType)
+admin.site.register(Assessment)
+admin.site.register(AssessmentType)
+admin.site.register(Enrollment)
+admin.site.register(StudentAssessment)
 
 
 @admin.register(User)
