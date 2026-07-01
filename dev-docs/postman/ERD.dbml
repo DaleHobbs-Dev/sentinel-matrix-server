@@ -7,6 +7,7 @@ Table instructors {
   bio text
   subject_taught varchar
   university varchar
+  is_active boolean
 }
 
 Table courses {
@@ -27,6 +28,7 @@ Table students {
   student_id varchar [unique, not null]
   email varchar [unique]
   prior_academic_standing varchar
+  is_active boolean
   created_at timestamp
 }
 
@@ -49,8 +51,7 @@ Table assessments {
   course_assessment_type_id integer [not null]
   max_score decimal
   due_date date
-  completed_date date
-  created_at timestamp
+  is_archived boolean
 }
 
 Table student_assessments {
@@ -59,8 +60,8 @@ Table student_assessments {
   assessment_id integer [not null]
   score decimal
   is_missing boolean
-  submitted_at timestamp
-  created_at timestamp
+  completed_date timestamp
+  is_archived boolean
 }
 
 Table assessment_types {
