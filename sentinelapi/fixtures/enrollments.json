@@ -1,0 +1,218 @@
+[
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 1,
+    "fields": {
+      "student": 1,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:00:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 2,
+    "fields": {
+      "student": 2,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:01:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 3,
+    "fields": {
+      "student": 3,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:02:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 4,
+    "fields": {
+      "student": 4,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:03:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 5,
+    "fields": {
+      "student": 5,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:04:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 6,
+    "fields": {
+      "student": 6,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:05:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 7,
+    "fields": {
+      "student": 7,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:06:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 8,
+    "fields": {
+      "student": 8,
+      "course": 1,
+      "enrolled_at": "2026-01-05T14:07:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 9,
+    "fields": {
+      "student": 9,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:00:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 10,
+    "fields": {
+      "student": 10,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:01:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 11,
+    "fields": {
+      "student": 11,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:02:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 12,
+    "fields": {
+      "student": 12,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:03:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 13,
+    "fields": {
+      "student": 13,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:04:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 14,
+    "fields": {
+      "student": 14,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:05:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 15,
+    "fields": {
+      "student": 15,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:06:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 16,
+    "fields": {
+      "student": 16,
+      "course": 2,
+      "enrolled_at": "2026-01-05T15:07:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 17,
+    "fields": {
+      "student": 1,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:00:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 18,
+    "fields": {
+      "student": 3,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:01:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 19,
+    "fields": {
+      "student": 5,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:02:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 20,
+    "fields": {
+      "student": 9,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:03:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 21,
+    "fields": {
+      "student": 11,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:04:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 22,
+    "fields": {
+      "student": 13,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:05:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 23,
+    "fields": {
+      "student": 17,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:06:00Z"
+    }
+  },
+  {
+    "model": "sentinelapi.enrollment",
+    "pk": 24,
+    "fields": {
+      "student": 18,
+      "course": 3,
+      "enrolled_at": "2026-01-05T16:07:00Z"
+    }
+  }
+]

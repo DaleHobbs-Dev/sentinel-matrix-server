@@ -13,7 +13,7 @@ class CourseSerializer(serializers.ModelSerializer):
     # returns True if the current user is the instructor of the course, otherwise False
     def get_is_instructor(self, obj):
         """Check if the current user is the instructor of the course"""
-        return self.context["request"].user == obj.instructor
+        return self.context["request"].user == obj.instructor.user
 
     class Meta:
         model = Course
@@ -46,7 +46,7 @@ class CourseViewSet(viewsets.ViewSet):
     def list(self, request):
         """Handle GET requests to list all requesting Instructor's Courses."""
 
-        courses = Course.objects.all().filter(instructor=request.user)
+        courses = Course.objects.all().filter(instructor__user=request.user)
 
         active_param = request.query_params.get("is_active", None)
         if active_param is not None:
@@ -58,7 +58,9 @@ class CourseViewSet(viewsets.ViewSet):
             courses = courses.filter(
                 Q(course_name__icontains=search)
                 | Q(description__icontains=search)
-                | Q(instructor__username__icontains=search)
+                | Q(instructor__user__email__icontains=search)
+                | Q(instructor__user__first_name__icontains=search)
+                | Q(instructor__user__last_name__icontains=search)
             )
 
         serializer = CourseSerializer(courses, many=True, context={"request": request})
@@ -79,7 +81,7 @@ class CourseViewSet(viewsets.ViewSet):
 
         serializer = CourseSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        serializer.save(instructor=request.user)
+        serializer.save(instructor=request.user.instructor)
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -89,7 +91,7 @@ class CourseViewSet(viewsets.ViewSet):
             course = Course.objects.get(pk=pk)
 
             # Only allow the owner of the course to delete it
-            if course.instructor != request.user:
+            if course.instructor.user != request.user:
                 return response.Response(status=status.HTTP_403_FORBIDDEN)
 
             course.delete()
@@ -103,14 +105,14 @@ class CourseViewSet(viewsets.ViewSet):
             course = Course.objects.get(pk=pk)
 
             # Only allow the owner of the course to update it
-            if course.instructor != request.user:
+            if course.instructor.user != request.user:
                 return response.Response(status=status.HTTP_403_FORBIDDEN)
 
             serializer = CourseSerializer(
                 course, data=request.data, context={"request": request}
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save(instructor=request.user)
+            serializer.save(instructor=request.user.instructor)
             return response.Response(serializer.data, status=status.HTTP_200_OK)
 
         except Course.DoesNotExist:
@@ -122,14 +124,14 @@ class CourseViewSet(viewsets.ViewSet):
             course = Course.objects.get(pk=pk)
 
             # Only allow the owner of the course to partially update it
-            if course.instructor != request.user:
+            if course.instructor.user != request.user:
                 return response.Response(status=status.HTTP_403_FORBIDDEN)
 
             serializer = CourseSerializer(
                 course, data=request.data, partial=True, context={"request": request}
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save(instructor=request.user)
+            serializer.save(instructor=request.user.instructor)
             return response.Response(serializer.data, status=status.HTTP_200_OK)
         except Course.DoesNotExist:
             return response.Response(status=status.HTTP_404_NOT_FOUND)

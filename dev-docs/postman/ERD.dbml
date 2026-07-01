@@ -45,9 +45,8 @@ Table enrollments {
 
 Table assessments {
   id integer [primary key]
-  course_id integer [not null]
   title varchar [not null]
-  assessment_type_id integer [not null]
+  course_assessment_type_id integer [not null]
   max_score decimal
   due_date date
   completed_date date
@@ -66,9 +65,19 @@ Table student_assessments {
 
 Table assessment_types {
   id integer [primary key]
-  name varchar [not null]
-  weight integer [not null]
-  risk_score_weight integer [not null]
+  name varchar [unique, not null]
+}
+
+Table course_assessment_types {
+  id integer [primary key]
+  course_id integer [not null]
+  assessment_type_id integer [not null]
+  weight decimal [not null]
+  risk_score_weight decimal [not null, default: 0]
+
+  indexes {
+    (course_id, assessment_type_id) [unique]
+  }
 }
 
 Ref: instructors.id < courses.instructor_id
@@ -76,8 +85,9 @@ Ref: instructors.id < courses.instructor_id
 Ref: courses.id < enrollments.course_id
 Ref: students.id < enrollments.student_id
 
-Ref: courses.id < assessments.course_id
 Ref: enrollments.id < student_assessments.enrollment_id
 Ref: assessments.id < student_assessments.assessment_id
 
-Ref: assessment_types.id < assessments.assessment_type_id
+Ref: courses.id < course_assessment_types.course_id
+Ref: assessment_types.id < course_assessment_types.assessment_type_id
+Ref: course_assessment_types.id < assessments.course_assessment_type_id

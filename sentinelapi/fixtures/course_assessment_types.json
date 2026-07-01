@@ -1,0 +1,62 @@
+[
+  {
+    "model": "sentinelapi.courseassessmenttype",
+    "pk": 1,
+    "fields": {
+      "course": 1,
+      "assessment_type": 1,
+      "weight": "20.00",
+      "risk_score_weight": "30.00"
+    }
+  },
+  {
+    "model": "sentinelapi.courseassessmenttype",
+    "pk": 2,
+    "fields": {
+      "course": 1,
+      "assessment_type": 2,
+      "weight": "80.00",
+      "risk_score_weight": "70.00"
+    }
+  },
+  {
+    "model": "sentinelapi.courseassessmenttype",
+    "pk": 3,
+    "fields": {
+      "course": 2,
+      "assessment_type": 1,
+      "weight": "20.00",
+      "risk_score_weight": "30.00"
+    }
+  },
+  {
+    "model": "sentinelapi.courseassessmenttype",
+    "pk": 4,
+    "fields": {
+      "course": 2,
+      "assessment_type": 2,
+      "weight": "80.00",
+      "risk_score_weight": "70.00"
+    }
+  },
+  {
+    "model": "sentinelapi.courseassessmenttype",
+    "pk": 5,
+    "fields": {
+      "course": 3,
+      "assessment_type": 1,
+      "weight": "20.00",
+      "risk_score_weight": "30.00"
+    }
+  },
+  {
+    "model": "sentinelapi.courseassessmenttype",
+    "pk": 6,
+    "fields": {
+      "course": 3,
+      "assessment_type": 2,
+      "weight": "80.00",
+      "risk_score_weight": "70.00"
+    }
+  }
+]

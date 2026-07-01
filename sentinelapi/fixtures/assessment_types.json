@@ -1,0 +1,16 @@
+[
+  {
+    "model": "sentinelapi.assessmenttype",
+    "pk": 1,
+    "fields": {
+      "name": "Attendance"
+    }
+  },
+  {
+    "model": "sentinelapi.assessmenttype",
+    "pk": 2,
+    "fields": {
+      "name": "Homework"
+    }
+  }
+]
