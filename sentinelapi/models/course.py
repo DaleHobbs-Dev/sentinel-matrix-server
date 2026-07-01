@@ -1,13 +1,14 @@
 """Model for Course"""
 
 from django.db import models
-from django.conf import settings
 
 
 class Course(models.Model):
     """Model for Course"""
 
-    instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    instructor = models.ForeignKey(
+        "sentinelapi.Instructor", on_delete=models.CASCADE, related_name="courses"
+    )
     course_name = models.CharField(max_length=100)
     description = models.TextField()
     term = models.CharField(max_length=50, blank=True, null=True)
@@ -18,6 +19,4 @@ class Course(models.Model):
 
     def __str__(self):
         """String representation of the Course model"""
-        return (
-            f"{self.course_name} - {self.term} (Instructor: {self.instructor.username})"
-        )
+        return f"{self.course_name} - {self.term} (Instructor: {self.instructor.user.first_name} {self.instructor.user.last_name})"
