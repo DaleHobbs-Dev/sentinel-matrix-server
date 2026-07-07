@@ -7,6 +7,31 @@ from sentinelapi.models import Enrollment
 class EnrollmentSerializer(serializers.ModelSerializer):
     """Serializer for Enrollment model"""
 
+    grade_average = serializers.SerializerMethodField(read_only=True)
+    attendance_rate = serializers.SerializerMethodField(read_only=True)
+    prior_academic_standing = serializers.SerializerMethodField(read_only=True)
+    missing_assignment_rate = serializers.SerializerMethodField(read_only=True)
+    risk_score = serializers.SerializerMethodField(read_only=True)
+    risk_band = serializers.SerializerMethodField(read_only=True)
+
+    def get_grade_average(self, obj):
+        return obj.grade_average
+
+    def get_attendance_rate(self, obj):
+        return obj.attendance_rate
+
+    def get_prior_academic_standing(self, obj):
+        return obj.prior_academic_standing
+
+    def get_missing_assignment_rate(self, obj):
+        return obj.missing_assignment_rate
+
+    def get_risk_score(self, obj):
+        return obj.risk_score
+
+    def get_risk_band(self, obj):
+        return obj.risk_band
+
     class Meta:
         model = Enrollment
         fields = [
@@ -14,15 +39,22 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             "course",
             "student",
             "enrolled_at",
-            # "grade_average",
-            # "attendance_rate",
-            # "missing_assignment_rate",
-            # "risk_score",
-            # "risk_band",
+            "grade_average",
+            "attendance_rate",
+            "prior_academic_standing",
+            "missing_assignment_rate",
+            "risk_score",
+            "risk_band",
         ]
         read_only_fields = [
             "id",
             "enrolled_at",
+            "grade_average",
+            "attendance_rate",
+            "prior_academic_standing",
+            "missing_assignment_rate",
+            "risk_score",
+            "risk_band",
         ]
 
 
