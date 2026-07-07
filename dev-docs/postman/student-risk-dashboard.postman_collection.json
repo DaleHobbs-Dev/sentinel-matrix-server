@@ -442,6 +442,946 @@
 						},
 						"description": "Deletes a course. Only the instructor who owns the course can delete it.\n\nReturns 204 on success, 403 for a non-owner, or 404 if the course does not exist."
 					},
+						"response": []
+					}
+				]
+			},
+			{
+				"name": "Assessment Types",
+				"item": [
+				{
+					"name": "List Assessment Types",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment-types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessment-types"
+							]
+						},
+						"description": "Returns all global assessment types.\n\nRequires authentication. Returns 200 with an array containing: id, name."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assessment Type by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns a single assessment type by primary key.\n\nRequires authentication. Returns 200 with the assessment type object or 404 with { \"detail\": \"Assessment type not found.\" }."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assessment Type",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Quiz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/assessment-types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessment-types"
+							]
+						},
+						"description": "Creates a global assessment type.\n\nRequires authentication. Returns 201 on success, 400 for validation errors, or 400 with { \"detail\": \"Assessment type with this name already exists.\" } for duplicate names."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Assessment Type",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Exam\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Replaces an assessment type.\n\nRequires authentication. Returns 200 on success, 404 if missing, 400 for validation errors, or 400 for duplicate names."
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Assessment Type",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Project\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Updates supplied assessment type fields.\n\nRequires authentication. Returns 200 on success, 404 if missing, 400 for validation errors, or 400 for duplicate names."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Assessment Type",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deletes an assessment type.\n\nRequires authentication. Returns 204 on success or 404 with { \"detail\": \"Assessment type not found.\" }."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Assessments",
+			"item": [
+				{
+					"name": "List Assessments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments"
+							]
+						},
+						"description": "Returns assessments owned by the authenticated instructor.\n\nRequires authentication. Returns 200 with an array containing: id, title, max_score, due_date, course_assessment_type."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Assessments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessments?course_id=1&assessment_type_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments"
+							],
+							"query": [
+								{
+									"key": "course_id",
+									"value": "1"
+								},
+								{
+									"key": "assessment_type_id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Filters the authenticated instructor's assessments by course_id and/or assessment_type_id.\n\nRequires authentication. Returns 200 with a filtered array."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assessment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns one assessment owned by the authenticated instructor.\n\nRequires authentication. Returns 200 with the assessment object or 404 with { \"detail\": \"Assessment not found.\" }."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assessment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Unit 1 Quiz\",\n    \"max_score\": \"100.00\",\n    \"due_date\": \"2026-02-15T23:59:00Z\",\n    \"course_assessment_type_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/assessments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments"
+							]
+						},
+						"description": "Creates an assessment for a course assessment type owned by the authenticated instructor.\n\nRequired: title, max_score, due_date, course_assessment_type_id. Returns 201 on success, 400 for validation errors, or 400 if the title already exists for the course assessment type."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Assessment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Unit 1 Quiz - Revised\",\n    \"max_score\": \"100.00\",\n    \"due_date\": \"2026-02-16T23:59:00Z\",\n    \"course_assessment_type_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Replaces one assessment owned by the authenticated instructor.\n\nRequires authentication. Returns 200 on success, 404 if missing, 400 for validation errors, or 400 if the title already exists for the course assessment type."
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Assessment",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"max_score\": \"50.00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Updates supplied assessment fields for an assessment owned by the authenticated instructor.\n\nRequires authentication. Returns 200 on success, 404 if missing, or 400 for validation errors."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Assessment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deletes an assessment owned by the authenticated instructor.\n\nRequires authentication. Returns 204 on success or 404 with { \"detail\": \"Assessment not found.\" }."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enrollments",
+			"item": [
+				{
+					"name": "List Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/enrollments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"enrollments"
+							]
+						},
+						"description": "Returns all enrollments.\n\nRequires authentication. Returns 200 with an array containing: id, course, student, enrolled_at."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Enrollments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/enrollments?student_id=1&course_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"enrollments"
+							],
+							"query": [
+								{
+									"key": "student_id",
+									"value": "1"
+								},
+								{
+									"key": "course_id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Filters enrollments by student_id and/or course_id.\n\nRequires authentication. Returns 200 with a filtered array."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Enrollment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course\": 1,\n    \"student\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/enrollments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"enrollments"
+							]
+						},
+						"description": "Enrolls a student in a course.\n\nRequired: course, student. enrolled_at is read-only. Returns 201 on success or 400 for validation errors."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Enrollment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/enrollments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"enrollments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deletes an enrollment.\n\nRequires authentication. Returns 204 on success or 404 if the enrollment does not exist. The current ViewSet does not expose retrieve, PUT, or PATCH for enrollments."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Student Assessments",
+			"item": [
+				{
+					"name": "List Student Assessments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/student-assessments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments"
+							]
+						},
+						"description": "Returns all student assessments.\n\nRequires authentication. Returns 200 with an array containing: id, enrollment, assessment, score, is_missing, completed_date."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Student Assessments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/student-assessments?enrollment_id=1&assessment_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments"
+							],
+							"query": [
+								{
+									"key": "enrollment_id",
+									"value": "1"
+								},
+								{
+									"key": "assessment_id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Filters student assessments by enrollment_id and/or assessment_id.\n\nRequires authentication. Returns 200 with a filtered array."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student Assessment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/student-assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns a single student assessment by primary key.\n\nRequires authentication. Returns 200 with the student assessment object or 404 if missing."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Pending Student Assessment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"enrollment\": 1,\n    \"assessment\": 1,\n    \"score\": null,\n    \"is_missing\": false,\n    \"completed_date\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/student-assessments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments"
+							]
+						},
+						"description": "Creates a pending student assessment.\n\nRequired: enrollment, assessment. Pending state uses is_missing false with score and completed_date as null. Returns 201 on success or 400 for validation errors."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Completed Student Assessment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"enrollment\": 1,\n    \"assessment\": 1,\n    \"score\": \"92.50\",\n    \"is_missing\": false,\n    \"completed_date\": \"2026-02-14T18:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/student-assessments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments"
+							]
+						},
+						"description": "Creates a completed student assessment.\n\nCompleted state uses is_missing false with a score and completed_date. Returns 201 on success or 400 for validation errors."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Student Assessment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"enrollment\": 1,\n    \"assessment\": 1,\n    \"score\": \"88.00\",\n    \"is_missing\": false,\n    \"completed_date\": \"2026-02-14T18:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/student-assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Replaces a student assessment.\n\nRequires authentication. Returns 200 on success, 404 if missing, or 400 for validation errors."
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Student Assessment",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"score\": \"95.00\",\n    \"completed_date\": \"2026-02-14T18:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/student-assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Updates supplied fields on a student assessment.\n\nRequires authentication. Returns 200 on success, 404 if missing, or 400 for validation errors."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Student Assessment Missing",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_missing\": true,\n    \"score\": null,\n    \"completed_date\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/student-assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Marks a student assessment as missing.\n\nThe model constraint expects missing assessments to have is_missing true with score and completed_date as null."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Student Assessment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/student-assessments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"student-assessments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deletes a student assessment.\n\nRequires authentication. Returns 204 on success or 404 if the student assessment does not exist."
+					},
 					"response": []
 				}
 			]

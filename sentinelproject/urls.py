@@ -24,14 +24,18 @@ from sentinelapi.views.student import StudentViewSet
 from sentinelapi.views.course import CourseViewSet
 from sentinelapi.views.assessment_type import AssessmentTypeViewSet
 from sentinelapi.views.assessment import AssessmentViewSet
+from sentinelapi.views.enrollment import EnrollmentViewSet
+from sentinelapi.views.student_assessment import StudentAssessmentViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r"students", StudentViewSet, basename="student")
 router.register(r"courses", CourseViewSet, basename="course")
-router.register(
-    r"assessment-types", AssessmentTypeViewSet, basename="assessment-type"
-)
+router.register(r"enrollments", EnrollmentViewSet, basename="enrollment")
+router.register(r"assessment-types", AssessmentTypeViewSet, basename="assessment-type")
 router.register(r"assessments", AssessmentViewSet, basename="assessment")
+router.register(
+    r"student-assessments", StudentAssessmentViewSet, basename="student-assessment"
+)
 
 urlpatterns = [
     path("login", UserViewSet.as_view({"post": "user_login"}), name="login"),
