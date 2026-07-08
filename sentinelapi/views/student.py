@@ -3,15 +3,40 @@
 from django.db.models import Q
 from rest_framework import permissions, serializers, viewsets, response, status
 
-from sentinelapi.models import Student
+from sentinelapi.models import Student, Course
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    """Serializer for Course model"""
+
+    class Meta:
+        model = Course
+        fields = [
+            "id",
+            "course_name",
+            "is_active",
+        ]
+        read_only_fields = [
+            "id",
+        ]
 
 
 class StudentSerializer(serializers.ModelSerializer):
     """Serializer for the Student model."""
 
-    class Meta:
-        """Meta class for the StudentSerializer."""
+    current_courses = serializers.SerializerMethodField()
 
+    def get_current_courses(self, obj):
+        """Get the courses the student is currently enrolled in."""
+        courses = [
+            enrollment.course
+            for enrollment in obj.enrollments.all()
+            if enrollment.course.is_active
+        ]
+
+        return CourseSerializer(courses, many=True, context=self.context).data
+
+    class Meta:
         model = Student
         fields = (
             "id",
@@ -21,6 +46,7 @@ class StudentSerializer(serializers.ModelSerializer):
             "email",
             "prior_academic_standing",
             "enrollment_date",
+            "current_courses",
         )
 
 
@@ -33,7 +59,11 @@ class StudentViewSet(viewsets.ViewSet):
         """List all students, optionally filtered by a search query."""
 
         search = request.query_params.get("search", "").strip()
-        students = Student.objects.all().order_by("last_name", "first_name")
+        students = (
+            Student.objects.prefetch_related("enrollments__course")
+            .all()
+            .order_by("last_name", "first_name")
+        )
 
         if search:
             students = students.filter(
@@ -50,7 +80,7 @@ class StudentViewSet(viewsets.ViewSet):
         """Retrieve a specific student by ID."""
 
         try:
-            student = Student.objects.get(pk=pk)
+            student = Student.objects.prefetch_related("enrollments__course").get(pk=pk)
             serializer = StudentSerializer(student, context={"request": request})
             return response.Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
