@@ -25,6 +25,11 @@ class StudentSerializer(serializers.ModelSerializer):
     """Serializer for the Student model."""
 
     current_courses = serializers.SerializerMethodField()
+    grade_average = serializers.SerializerMethodField(read_only=True)
+    attendance_rate = serializers.SerializerMethodField(read_only=True)
+    missing_assignment_rate = serializers.SerializerMethodField(read_only=True)
+    risk_score = serializers.SerializerMethodField(read_only=True)
+    risk_band = serializers.SerializerMethodField(read_only=True)
 
     def get_current_courses(self, obj):
         """Get the courses the student is currently enrolled in."""
@@ -35,6 +40,21 @@ class StudentSerializer(serializers.ModelSerializer):
         ]
 
         return CourseSerializer(courses, many=True, context=self.context).data
+
+    def get_grade_average(self, obj):
+        return obj.grade_average
+
+    def get_attendance_rate(self, obj):
+        return obj.attendance_rate
+
+    def get_missing_assignment_rate(self, obj):
+        return obj.missing_assignment_rate
+
+    def get_risk_score(self, obj):
+        return obj.risk_score
+
+    def get_risk_band(self, obj):
+        return obj.risk_band
 
     class Meta:
         model = Student
@@ -47,6 +67,11 @@ class StudentSerializer(serializers.ModelSerializer):
             "prior_academic_standing",
             "enrollment_date",
             "current_courses",
+            "grade_average",
+            "attendance_rate",
+            "missing_assignment_rate",
+            "risk_score",
+            "risk_band",
         )
 
 

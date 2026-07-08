@@ -4,12 +4,7 @@ from decimal import Decimal
 
 from django.db import models
 from .course import Course
-from .student import Student
-
-PRIOR_ACADEMIC_STANDING = {
-    Student.AcademicStanding.GOOD: Decimal("90"),
-    Student.AcademicStanding.AT_RISK: Decimal("60"),
-}
+from .student import PRIOR_ACADEMIC_STANDING, Student
 
 
 class Enrollment(models.Model):
