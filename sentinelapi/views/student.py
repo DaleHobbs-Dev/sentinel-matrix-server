@@ -42,18 +42,23 @@ class StudentSerializer(serializers.ModelSerializer):
         return CourseSerializer(courses, many=True, context=self.context).data
 
     def get_grade_average(self, obj):
+        """Get the student's grade average."""
         return obj.grade_average
 
     def get_attendance_rate(self, obj):
+        """Get the student's attendance rate."""
         return obj.attendance_rate
 
     def get_missing_assignment_rate(self, obj):
+        """Get the student's missing assignment rate."""
         return obj.missing_assignment_rate
 
     def get_risk_score(self, obj):
+        """Get the student's risk score."""
         return obj.risk_score
 
     def get_risk_band(self, obj):
+        """Get the student's risk band."""
         return obj.risk_band
 
     class Meta:
