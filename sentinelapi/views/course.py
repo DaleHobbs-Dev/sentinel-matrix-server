@@ -140,6 +140,103 @@ class CourseDashboardSerializer(serializers.ModelSerializer):
         ]
 
 
+class InstructorDashboardRiskStudentSerializer(serializers.Serializer):
+    """Serialize at-risk enrollment details for the instructor dashboard."""
+
+    full_name = serializers.SerializerMethodField()
+    course = serializers.SerializerMethodField()
+    risk_score = serializers.SerializerMethodField()
+    risk_band = serializers.SerializerMethodField()
+
+    def get_full_name(self, obj):
+        """Get the student's full name."""
+        return f"{obj.student.first_name} {obj.student.last_name}"
+
+    def get_course(self, obj):
+        """Get the course name for this enrollment."""
+        return obj.course.course_name
+
+    def get_risk_score(self, obj):
+        """Get the enrollment's risk score."""
+        return _decimal_to_float(obj.risk_score)
+
+    def get_risk_band(self, obj):
+        """Get the enrollment's risk band."""
+        return obj.risk_band
+
+
+class InstructorDashboardSerializer(serializers.Serializer):
+    """Serializer for the instructor's primary dashboard."""
+
+    total_course_count = serializers.SerializerMethodField()
+    total_student_count = serializers.SerializerMethodField()
+    high_risk_student_count = serializers.SerializerMethodField()
+    moderate_risk_student_count = serializers.SerializerMethodField()
+    risk_students = serializers.SerializerMethodField()
+
+    def _get_enrollments(self, obj):
+        """Get all enrollment records from the instructor's courses."""
+        enrollments = []
+        for course in obj:
+            enrollments.extend(course.enrollments.all())
+        return enrollments
+
+    def _get_risk_enrollments(self, obj):
+        """Get high and moderate risk enrollments, sorted by severity."""
+        risk_order = {"High Risk": 0, "Moderate Risk": 1}
+        enrollments = [
+            enrollment
+            for enrollment in self._get_enrollments(obj)
+            if enrollment.risk_band in risk_order
+        ]
+        return sorted(
+            enrollments,
+            key=lambda enrollment: (
+                risk_order[enrollment.risk_band],
+                enrollment.student.last_name,
+                enrollment.student.first_name,
+                enrollment.course.course_name,
+            ),
+        )
+
+    def get_total_course_count(self, obj):
+        """Get the total number of courses taught by the instructor."""
+        return len(obj)
+
+    def get_total_student_count(self, obj):
+        """Get the total number of unique students across the instructor's courses."""
+        return len(
+            {
+                enrollment.student_id
+                for enrollment in self._get_enrollments(obj)
+            }
+        )
+
+    def get_high_risk_student_count(self, obj):
+        """Get the count of high risk enrollments."""
+        return sum(
+            1
+            for enrollment in self._get_enrollments(obj)
+            if enrollment.risk_band == "High Risk"
+        )
+
+    def get_moderate_risk_student_count(self, obj):
+        """Get the count of moderate risk enrollments."""
+        return sum(
+            1
+            for enrollment in self._get_enrollments(obj)
+            if enrollment.risk_band == "Moderate Risk"
+        )
+
+    def get_risk_students(self, obj):
+        """Get high risk students first, followed by moderate risk students."""
+        serializer = InstructorDashboardRiskStudentSerializer(
+            self._get_risk_enrollments(obj),
+            many=True,
+        )
+        return serializer.data
+
+
 def _decimal_to_float(value):
     """Convert Decimal-like computed values into JSON-friendly numbers."""
     if value is None:
@@ -212,6 +309,29 @@ class CourseViewSet(viewsets.ViewSet):
             return response.Response(serializer.data, status=status.HTTP_200_OK)
         except Course.DoesNotExist:
             return response.Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=["get"], url_path="dashboard")
+    def instructor_dashboard(self, request):
+        """Handle GET requests for the instructor's primary dashboard."""
+        if not hasattr(request.user, "instructor"):
+            return response.Response(status=status.HTTP_403_FORBIDDEN)
+
+        courses = list(
+            Course.objects.filter(instructor=request.user.instructor)
+            .prefetch_related(
+                Prefetch(
+                    "enrollments",
+                    queryset=Enrollment.objects.select_related("student", "course")
+                    .prefetch_related(
+                        "student_assessments__assessment__course_assessment_type__assessment_type"
+                    )
+                    .order_by("student__last_name", "student__first_name"),
+                ),
+            )
+            .order_by("course_name")
+        )
+        serializer = InstructorDashboardSerializer(courses)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """Handle POST requests to create a new course."""
