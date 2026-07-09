@@ -112,3 +112,28 @@ class EnrollmentComputedFieldTests(TestCase):
         self.assertEqual(data["prior_academic_standing"], "at risk")
         self.assertEqual(data["missing_assignment_rate"], Decimal("50.00"))
         self.assertEqual(data["risk_score"], Decimal("75.00"))
+
+    def test_enrollment_serializer_accepts_student_and_course_ids(self):
+        other_student = Student.objects.create(
+            first_name="Grace",
+            last_name="Hopper",
+            student_id="S1002",
+            email="grace@example.com",
+            enrollment_date="2026-07-06",
+            prior_academic_standing=Student.AcademicStanding.GOOD,
+        )
+        serializer = EnrollmentSerializer(
+            data={
+                "course": self.course.id,
+                "student": other_student.id,
+            }
+        )
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        enrollment = serializer.save()
+        data = EnrollmentSerializer(enrollment).data
+
+        self.assertEqual(enrollment.student, other_student)
+        self.assertEqual(enrollment.course, self.course)
+        self.assertEqual(data["student"]["id"], other_student.id)
+        self.assertEqual(data["student"]["first_name"], "Grace")

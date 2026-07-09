@@ -30,7 +30,13 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     missing_assignment_rate = serializers.SerializerMethodField(read_only=True)
     risk_score = serializers.SerializerMethodField(read_only=True)
     risk_band = serializers.SerializerMethodField(read_only=True)
-    student = StudentSerializer(read_only=True)
+    student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
+
+    def to_representation(self, instance):
+        """Return expanded student details while accepting a student id on writes."""
+        data = super().to_representation(instance)
+        data["student"] = StudentSerializer(instance.student).data
+        return data
 
     def get_grade_average(self, obj):
         """Get the grade average for the enrollment."""
@@ -95,7 +101,7 @@ class EnrollmentViewSet(viewsets.ViewSet):
             - course_id: filter enrollments by a specific course
         """
 
-        enrollments = Enrollment.objects.all()
+        enrollments = Enrollment.objects.select_related("student", "course").all()
 
         student_id = request.query_params.get("student_id", None)
         if student_id is not None:
