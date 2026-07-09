@@ -256,6 +256,38 @@
 					"response": []
 				},
 				{
+					"name": "Get Course Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/courses/:id/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"courses",
+								":id",
+								"dashboard"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns dashboard data for a single course.\n\nRequires authentication. Returns 200 with: id, course_name, description, metrics, and students. metrics contains average_grade, attendance_rate, high_risk_student_count, and moderate_risk_student_count. students contains course-scoped student metrics: id, student_id, first_name, last_name, grade_average, attendance_rate, missing_assignment_count, and risk_band. Returns 404 if the course does not exist."
+					},
+					"response": []
+				},
+				{
 					"name": "Search Courses",
 					"request": {
 						"method": "GET",
@@ -666,6 +698,228 @@
 			]
 		},
 		{
+			"name": "Course Assessment Types",
+			"item": [
+				{
+					"name": "List Course Assessment Types",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/course-assessment-types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"course-assessment-types"
+							]
+						},
+						"description": "Returns course-specific assessment type configurations for courses owned by the authenticated instructor.\n\nRequires authentication. Returns 200 with an array containing: id, course, assessment_type, assessment_type_name, weight, and risk_score_weight."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Course Assessment Types",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/course-assessment-types?course_id=1&assessment_type_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"course-assessment-types"
+							],
+							"query": [
+								{
+									"key": "course_id",
+									"value": "1"
+								},
+								{
+									"key": "assessment_type_id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Filters course assessment type configurations by course_id and/or assessment_type_id.\n\nRequires authentication. Returns 200 with a filtered array."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course Assessment Type by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/course-assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"course-assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns one course assessment type configuration owned by the authenticated instructor.\n\nRequires authentication. Returns 200 with the configuration object or 404 with { \"detail\": \"Course assessment type not found.\" }."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course Assessment Type",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course\": 1,\n    \"assessment_type\": 1,\n    \"weight\": \"20.00\",\n    \"risk_score_weight\": \"60.00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/course-assessment-types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"course-assessment-types"
+							]
+						},
+						"description": "Creates a course-specific configuration for one global assessment type.\n\nRequired: course, assessment_type, weight, risk_score_weight. Only courses owned by the authenticated instructor can be configured. Returns 201 on success, 400 for validation errors, or 400 if this assessment type is already configured for the selected course."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Course Assessment Type",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course\": 1,\n    \"assessment_type\": 1,\n    \"weight\": \"25.00\",\n    \"risk_score_weight\": \"55.00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/course-assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"course-assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Replaces a course assessment type configuration.\n\nRequires authentication. Only courses owned by the authenticated instructor can be configured. Returns 200 on success, 404 if missing, 400 for validation errors, or 400 if this assessment type is already configured for the selected course."
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Course Assessment Type",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authtoken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"weight\": \"25.00\",\n    \"risk_score_weight\": \"55.00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/course-assessment-types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"course-assessment-types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Updates supplied fields on a course assessment type configuration, commonly weight and risk_score_weight.\n\nRequires authentication. Returns 200 on success, 404 if missing, or 400 for validation errors."
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Assessments",
 			"item": [
 				{
@@ -688,7 +942,7 @@
 								"assessments"
 							]
 						},
-						"description": "Returns assessments owned by the authenticated instructor.\n\nRequires authentication. Returns 200 with an array containing: id, title, max_score, due_date, course_assessment_type."
+						"description": "Returns assessments owned by the authenticated instructor.\n\nRequires authentication. Returns 200 with an array containing: id, title, max_score, due_date, course_id, course_assessment_type_id, assessment_type_id, assessment_type_name, weight, and risk_score_weight."
 					},
 					"response": []
 				},
@@ -775,7 +1029,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Unit 1 Quiz\",\n    \"max_score\": \"100.00\",\n    \"due_date\": \"2026-02-15T23:59:00Z\",\n    \"course_assessment_type_id\": 1\n}",
+							"raw": "{\n    \"title\": \"Unit 1 Quiz\",\n    \"max_score\": \"100.00\",\n    \"due_date\": \"2026-02-15T23:59:00Z\",\n    \"course_id\": 1,\n    \"assessment_type_id\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -791,7 +1045,7 @@
 								"assessments"
 							]
 						},
-						"description": "Creates an assessment for a course assessment type owned by the authenticated instructor.\n\nRequired: title, max_score, due_date, course_assessment_type_id. Returns 201 on success, 400 for validation errors, or 400 if the title already exists for the course assessment type."
+						"description": "Creates an assessment for one of the authenticated instructor's courses.\n\nRequired: title, max_score, due_date, course_id, assessment_type_id. The API resolves course_id + assessment_type_id to that course's CourseAssessmentType configuration and returns the flattened assessment object. Returns 201 on success, 400 for validation errors, or 400 if the title already exists for the course assessment type."
 					},
 					"response": []
 				},
@@ -813,7 +1067,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Unit 1 Quiz - Revised\",\n    \"max_score\": \"100.00\",\n    \"due_date\": \"2026-02-16T23:59:00Z\",\n    \"course_assessment_type_id\": 1\n}",
+							"raw": "{\n    \"title\": \"Unit 1 Quiz - Revised\",\n    \"max_score\": \"100.00\",\n    \"due_date\": \"2026-02-16T23:59:00Z\",\n    \"course_id\": 1,\n    \"assessment_type_id\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -836,7 +1090,7 @@
 								}
 							]
 						},
-						"description": "Replaces one assessment owned by the authenticated instructor.\n\nRequires authentication. Returns 200 on success, 404 if missing, 400 for validation errors, or 400 if the title already exists for the course assessment type."
+						"description": "Replaces one assessment owned by the authenticated instructor.\n\nRequires authentication. Include course_id and assessment_type_id to set or keep the course assessment type. Returns 200 on success, 404 if missing, 400 for validation errors, or 400 if the title already exists for the course assessment type."
 					},
 					"response": []
 				},

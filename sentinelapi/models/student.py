@@ -1,9 +1,12 @@
 """Model for Students"""
 
-from decimal import Decimal
-
 from django.apps import apps
 from django.db import models
+
+from sentinelapi.services.student_metrics import (
+    PRIOR_ACADEMIC_STANDING_SCORES,
+    StudentMetricCalculator,
+)
 
 
 # Blueprint for the Student objects
@@ -53,95 +56,42 @@ class Student(models.Model):
             assessment__course_assessment_type__assessment_type__name__iexact="attendance"
         )
 
+    def _metric_calculator(self):
+        """Get the metric calculator scoped to all of this student's assessments."""
+        return StudentMetricCalculator(
+            self._get_student_assessments(),
+            self.prior_academic_standing,
+        )
+
     @property
     def grade_average(self):
         """Average score across all graded academic assessments in all courses."""
-        graded = self._get_academic_assessments().filter(score__isnull=False)
-
-        if not graded.exists():
-            return None
-
-        total_score = sum(sa.score for sa in graded)
-        total_possible = sum(sa.assessment.max_score for sa in graded)
-
-        if total_possible == 0:
-            return None
-
-        return round((total_score / total_possible) * 100, 2)
+        return self._metric_calculator().grade_average
 
     @property
     def attendance_rate(self):
         """Average attendance score across all enrolled courses."""
-        graded = self._get_attendance_assessments().filter(score__isnull=False)
-
-        if not graded.exists():
-            return None
-
-        total_score = sum(sa.score for sa in graded)
-        count = graded.count()
-
-        return round(total_score / count, 2)
+        return self._metric_calculator().attendance_rate
 
     @property
     def missing_assignment_rate(self):
         """Percentage of academic assessments marked missing across all courses."""
-        academic = self._get_academic_assessments()
-        total = academic.count()
-
-        if total == 0:
-            return None
-
-        missing_count = academic.filter(is_missing=True).count()
-
-        return round((Decimal(missing_count) / Decimal(total)) * 100, 2)
+        return self._metric_calculator().missing_assignment_rate
 
     @property
     def assignment_completion_rate(self):
         """Inverse of missing_assignment_rate."""
-        if self.missing_assignment_rate is None:
-            return None
-
-        return round(100 - self.missing_assignment_rate, 2)
+        return self._metric_calculator().assignment_completion_rate
 
     @property
     def risk_score(self):
         """Weighted composite score out of 100 across all enrolled courses."""
-        grade_avg = self.grade_average
-        attendance = self.attendance_rate
-        completion = self.assignment_completion_rate
-        prior_standing = PRIOR_ACADEMIC_STANDING.get(self.prior_academic_standing)
-
-        if (
-            grade_avg is None
-            or attendance is None
-            or completion is None
-            or prior_standing is None
-        ):
-            return None
-
-        score = (
-            (grade_avg * Decimal("0.40"))
-            + (attendance * Decimal("0.30"))
-            + (completion * Decimal("0.20"))
-            + (prior_standing * Decimal("0.10"))
-        )
-
-        return round(score, 2)
+        return self._metric_calculator().risk_score
 
     @property
     def risk_band(self):
         """Categorize the student-level risk score into a band."""
-        score = self.risk_score
-
-        if score is None:
-            return None
-
-        if score >= 70:
-            return "Low Risk"
-        elif score >= 40:
-            return "Moderate Risk"
-        else:
-            return "High Risk"
+        return self._metric_calculator().risk_band
 
     # Meta class for additional model options
     class Meta:
@@ -158,7 +108,4 @@ class Student(models.Model):
         ]
 
 
-PRIOR_ACADEMIC_STANDING = {
-    Student.AcademicStanding.GOOD: Decimal("90"),
-    Student.AcademicStanding.AT_RISK: Decimal("60"),
-}
+PRIOR_ACADEMIC_STANDING = PRIOR_ACADEMIC_STANDING_SCORES
