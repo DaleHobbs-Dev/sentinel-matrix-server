@@ -177,6 +177,68 @@ class CourseDashboardTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_instructor_dashboard_returns_summary_and_risk_students(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/courses/dashboard")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["total_course_count"], 1)
+        self.assertEqual(response.data["total_student_count"], 3)
+        self.assertEqual(response.data["high_risk_student_count"], 1)
+        self.assertEqual(response.data["moderate_risk_student_count"], 1)
+        self.assertEqual(
+            response.data["risk_students"],
+            [
+                {
+                    "full_name": "Cara Patel",
+                    "course": "College Algebra",
+                    "risk_score": 33.0,
+                    "risk_band": "High Risk",
+                },
+                {
+                    "full_name": "Ben Ortiz",
+                    "course": "College Algebra",
+                    "risk_score": 51.0,
+                    "risk_band": "Moderate Risk",
+                },
+            ],
+        )
+
+    def test_instructor_dashboard_excludes_other_instructors_courses(self):
+        other_user = User.objects.create_user(
+            email="other@example.com",
+            password="StrongPass1!",
+            first_name="Other",
+            last_name="Professor",
+        )
+        other_instructor = Instructor.objects.create(user=other_user)
+        Course.objects.create(
+            instructor=other_instructor,
+            course_name="Biology",
+            description="Other instructor course",
+            term="Fall",
+        )
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/courses/dashboard")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["total_course_count"], 1)
+
+    def test_instructor_dashboard_requires_instructor_profile(self):
+        student_user = User.objects.create_user(
+            email="student-user@example.com",
+            password="StrongPass1!",
+            first_name="Student",
+            last_name="User",
+        )
+        self.client.force_authenticate(user=student_user)
+
+        response = self.client.get("/courses/dashboard")
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class CourseCreateTests(APITestCase):
     def setUp(self):

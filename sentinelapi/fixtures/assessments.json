@@ -6,7 +6,7 @@
       "course_assessment_type": 1,
       "title": "Attendance 1",
       "max_score": "100.00",
-      "due_date": "2026-01-16T23:59:00Z"
+      "due_date": "2026-07-08T23:59:00Z"
     }
   },
   {
@@ -16,7 +16,7 @@
       "course_assessment_type": 2,
       "title": "Homework 1",
       "max_score": "100.00",
-      "due_date": "2026-01-23T23:59:00Z"
+      "due_date": "2026-07-08T23:59:00Z"
     }
   },
   {
@@ -26,7 +26,7 @@
       "course_assessment_type": 3,
       "title": "Attendance 1",
       "max_score": "100.00",
-      "due_date": "2026-01-16T23:59:00Z"
+      "due_date": "2026-07-08T23:59:00Z"
     }
   },
   {
@@ -36,7 +36,7 @@
       "course_assessment_type": 4,
       "title": "Homework 1",
       "max_score": "100.00",
-      "due_date": "2026-01-23T23:59:00Z"
+      "due_date": "2026-07-08T23:59:00Z"
     }
   },
   {
@@ -46,7 +46,7 @@
       "course_assessment_type": 5,
       "title": "Attendance 1",
       "max_score": "100.00",
-      "due_date": "2026-01-16T23:59:00Z"
+      "due_date": "2026-07-08T23:59:00Z"
     }
   },
   {
@@ -56,7 +56,7 @@
       "course_assessment_type": 6,
       "title": "Homework 1",
       "max_score": "100.00",
-      "due_date": "2026-01-23T23:59:00Z"
+      "due_date": "2026-07-08T23:59:00Z"
     }
   }
 ]

@@ -36,6 +36,17 @@ class StudentAssessmentSerializer(serializers.ModelSerializer):
         data["assessment"] = AssessmentSerializer(instance.assessment).data
         return data
 
+    def validate(self, attrs):
+        """Treat omitted scores on updates as missing submissions."""
+        score_was_provided = "score" in self.initial_data
+
+        if self.instance is not None and not score_was_provided:
+            attrs["score"] = None
+            attrs["completed_date"] = None
+            attrs["is_missing"] = True
+
+        return attrs
+
     class Meta:
         model = StudentAssessment
         fields = [

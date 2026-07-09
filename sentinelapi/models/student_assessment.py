@@ -20,6 +20,27 @@ class StudentAssessment(models.Model):
     completed_date = models.DateTimeField(null=True, blank=True)
     is_missing = models.BooleanField(default=False)
 
+    def _normalize_missing_state(self):
+        """Keep missing status in sync with whether the assessment has a score."""
+        if self.score is None:
+            self.is_missing = True
+            self.completed_date = None
+        else:
+            self.is_missing = False
+
+    def save(self, *args, **kwargs):
+        """Normalize missing status before saving."""
+        self._normalize_missing_state()
+
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            kwargs["update_fields"] = set(update_fields) | {
+                "completed_date",
+                "is_missing",
+            }
+
+        super().save(*args, **kwargs)
+
     def clean(self):
         """
         Custom validation to ensure that the assessment and enrollment belong to the same course.
@@ -50,7 +71,7 @@ class StudentAssessment(models.Model):
             # Constraint checks to ensure valid states for StudentAssessment
             models.CheckConstraint(
                 condition=(
-                    # Pending assessments must have a score and completed_date as null
+                    # Pending assessments have no score, no completed_date, and are not missing
                     Q(
                         is_missing=False,
                         score__isnull=True,
