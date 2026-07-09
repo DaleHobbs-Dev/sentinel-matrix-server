@@ -1,7 +1,24 @@
 """Views for handling enrollment-related API endpoints"""
 
 from rest_framework import viewsets, permissions, status, serializers, response
-from sentinelapi.models import Enrollment
+from sentinelapi.models import Enrollment, Student
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    """Serializer for Student model"""
+
+    class Meta:
+        """Meta class for StudentSerializer"""
+
+        model = Student
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+        ]
+        read_only_fields = [
+            "id",
+        ]
 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
@@ -13,23 +30,30 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     missing_assignment_rate = serializers.SerializerMethodField(read_only=True)
     risk_score = serializers.SerializerMethodField(read_only=True)
     risk_band = serializers.SerializerMethodField(read_only=True)
+    student = StudentSerializer(read_only=True)
 
     def get_grade_average(self, obj):
+        """Get the grade average for the enrollment."""
         return obj.grade_average
 
     def get_attendance_rate(self, obj):
+        """Get the attendance rate for the enrollment."""
         return obj.attendance_rate
 
     def get_prior_academic_standing(self, obj):
+        """Get the prior academic standing for the enrollment."""
         return obj.prior_academic_standing
 
     def get_missing_assignment_rate(self, obj):
+        """Get the missing assignment rate for the enrollment."""
         return obj.missing_assignment_rate
 
     def get_risk_score(self, obj):
+        """Get the risk score for the enrollment."""
         return obj.risk_score
 
     def get_risk_band(self, obj):
+        """Get the risk band for the enrollment."""
         return obj.risk_band
 
     class Meta:
@@ -37,7 +61,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "course",
-            "student",
             "enrolled_at",
             "grade_average",
             "attendance_rate",
@@ -45,6 +68,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             "missing_assignment_rate",
             "risk_score",
             "risk_band",
+            "student",
         ]
         read_only_fields = [
             "id",
