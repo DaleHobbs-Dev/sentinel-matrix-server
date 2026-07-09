@@ -176,3 +176,49 @@ class CourseDashboardTests(APITestCase):
         response = self.client.get(f"/courses/{self.course.id}/dashboard")
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class CourseCreateTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="professor@example.com",
+            password="StrongPass1!",
+            first_name="Test",
+            last_name="Professor",
+        )
+        Instructor.objects.create(user=self.user)
+        AssessmentType.objects.create(name="Attendance")
+        AssessmentType.objects.create(name="Homework")
+
+    def test_create_course_creates_default_assessment_type_configs(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            "/courses",
+            {
+                "course_name": "College Algebra",
+                "description": "Foundational algebra course",
+                "term": "Fall",
+                "course_image_url": "",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        course = Course.objects.get(pk=response.data["id"])
+        configs = {
+            config.assessment_type.name: config
+            for config in CourseAssessmentType.objects.filter(course=course)
+        }
+
+        self.assertEqual(set(configs), {"Attendance", "Homework"})
+        self.assertEqual(configs["Attendance"].weight, Decimal("20.00"))
+        self.assertEqual(
+            configs["Attendance"].risk_score_weight,
+            Decimal("60.00"),
+        )
+        self.assertEqual(configs["Homework"].weight, Decimal("80.00"))
+        self.assertEqual(
+            configs["Homework"].risk_score_weight,
+            Decimal("40.00"),
+        )

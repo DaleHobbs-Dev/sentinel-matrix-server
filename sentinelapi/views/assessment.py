@@ -6,30 +6,34 @@ from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.response import Response
 
 from sentinelapi.models import Assessment, CourseAssessmentType
-from .assessment_type import AssessmentTypeSerializer
-
-
-class CourseAssessmentTypeSerializer(serializers.ModelSerializer):
-    """Display a course's assessment type and its configured weights."""
-
-    assessment_type = AssessmentTypeSerializer(read_only=True)
-
-    class Meta:
-        model = CourseAssessmentType
-        fields = [
-            "id",
-            "course",
-            "assessment_type",
-            "weight",
-            "risk_score_weight",
-        ]
 
 
 class AssessmentSerializer(serializers.ModelSerializer):
     """Serialize an assessment with its course-specific type details."""
 
-    course_assessment_type = CourseAssessmentTypeSerializer(read_only=True)
-    course_assessment_type_id = serializers.IntegerField(write_only=True)
+    course_id = serializers.IntegerField(required=False, write_only=True)
+    assessment_type_id = serializers.IntegerField(required=False, write_only=True)
+    course_assessment_type_id = serializers.IntegerField(
+        source="course_assessment_type.id",
+        read_only=True,
+    )
+
+    assessment_type_name = serializers.CharField(
+        source="course_assessment_type.assessment_type.name",
+        read_only=True,
+    )
+    weight = serializers.DecimalField(
+        source="course_assessment_type.weight",
+        max_digits=5,
+        decimal_places=2,
+        read_only=True,
+    )
+    risk_score_weight = serializers.DecimalField(
+        source="course_assessment_type.risk_score_weight",
+        max_digits=5,
+        decimal_places=2,
+        read_only=True,
+    )
 
     class Meta:
         model = Assessment
@@ -38,27 +42,67 @@ class AssessmentSerializer(serializers.ModelSerializer):
             "title",
             "max_score",
             "due_date",
-            "course_assessment_type",
+            "course_id",
             "course_assessment_type_id",
+            "assessment_type_id",
+            "assessment_type_name",
+            "weight",
+            "risk_score_weight",
         ]
         read_only_fields = ["id"]
 
-    def validate_course_assessment_type_id(self, value):
-        """Require a valid configuration owned by the requesting instructor."""
-        try:
-            course_assessment_type = CourseAssessmentType.objects.get(pk=value)
-        except CourseAssessmentType.DoesNotExist as exc:
-            raise serializers.ValidationError(
-                "Course assessment type not found."
-            ) from exc
+    def to_representation(self, instance):
+        """Return course/type fields flattened for client filtering and display."""
+        data = super().to_representation(instance)
+        data["course_id"] = instance.course_assessment_type.course_id
+        data["assessment_type_id"] = (
+            instance.course_assessment_type.assessment_type_id
+        )
+        return data
 
-        request = self.context.get("request")
-        if request and course_assessment_type.course.instructor.user != request.user:
+    def validate(self, attrs):
+        """Resolve course/type input to the course's assessment type config."""
+        course_id = attrs.pop("course_id", None)
+        assessment_type_id = attrs.pop("assessment_type_id", None)
+
+        if self.instance is None and (course_id is None or assessment_type_id is None):
             raise serializers.ValidationError(
-                "You may only create assessments for your own courses."
+                {
+                    "course_id": "This field is required.",
+                    "assessment_type_id": "This field is required.",
+                }
             )
 
-        return value
+        if course_id is None and assessment_type_id is None:
+            return attrs
+
+        if course_id is None or assessment_type_id is None:
+            raise serializers.ValidationError(
+                "Both course_id and assessment_type_id are required together."
+            )
+
+        request = self.context.get("request")
+        filters = {
+            "course_id": course_id,
+            "assessment_type_id": assessment_type_id,
+        }
+
+        if request:
+            filters["course__instructor__user"] = request.user
+
+        try:
+            attrs["course_assessment_type"] = CourseAssessmentType.objects.get(
+                **filters
+            )
+        except CourseAssessmentType.DoesNotExist as exc:
+            raise serializers.ValidationError(
+                (
+                    "Course assessment type configuration not found for "
+                    "this course and assessment type."
+                )
+            ) from exc
+
+        return attrs
 
     def validate_max_score(self, value):
         """Assessment maximum scores must be greater than zero."""
@@ -83,7 +127,12 @@ class AssessmentViewSet(viewsets.ViewSet):
         if assessment_type_id:
             filters &= Q(course_assessment_type__assessment_type_id=assessment_type_id)
 
-        assessments = Assessment.objects.filter(filters)
+        assessments = Assessment.objects.filter(filters).select_related(
+            "course_assessment_type",
+            "course_assessment_type__course",
+            "course_assessment_type__assessment_type",
+        )
+
         serializer = AssessmentSerializer(
             assessments, many=True, context={"request": request}
         )

@@ -23,6 +23,7 @@ from sentinelapi.views.user import UserViewSet
 from sentinelapi.views.student import StudentViewSet
 from sentinelapi.views.course import CourseViewSet
 from sentinelapi.views.assessment_type import AssessmentTypeViewSet
+from sentinelapi.views.course_assessment_type import CourseAssessmentTypeViewSet
 from sentinelapi.views.assessment import AssessmentViewSet
 from sentinelapi.views.enrollment import EnrollmentViewSet
 from sentinelapi.views.student_assessment import StudentAssessmentViewSet
@@ -32,6 +33,11 @@ router.register(r"students", StudentViewSet, basename="student")
 router.register(r"courses", CourseViewSet, basename="course")
 router.register(r"enrollments", EnrollmentViewSet, basename="enrollment")
 router.register(r"assessment-types", AssessmentTypeViewSet, basename="assessment-type")
+router.register(
+    r"course-assessment-types",
+    CourseAssessmentTypeViewSet,
+    basename="course-assessment-type",
+)
 router.register(r"assessments", AssessmentViewSet, basename="assessment")
 router.register(
     r"student-assessments", StudentAssessmentViewSet, basename="student-assessment"

@@ -2,8 +2,12 @@
 
 from rest_framework import viewsets, permissions, status, serializers, response
 from rest_framework.decorators import action
+from django.db import transaction
 from django.db.models import Prefetch, Q
 from sentinelapi.models import Course, Enrollment
+from sentinelapi.services.course_assessment_types import (
+    create_default_course_assessment_types,
+)
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -214,7 +218,9 @@ class CourseViewSet(viewsets.ViewSet):
 
         serializer = CourseSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        serializer.save(instructor=request.user.instructor)
+        with transaction.atomic():
+            course = serializer.save(instructor=request.user.instructor)
+            create_default_course_assessment_types(course)
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
