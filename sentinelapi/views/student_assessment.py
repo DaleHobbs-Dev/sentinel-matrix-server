@@ -1,11 +1,40 @@
 """Views for handling student assessment-related API endpoints"""
 
 from rest_framework import viewsets, permissions, status, serializers, response
-from sentinelapi.models import StudentAssessment
+from sentinelapi.models import StudentAssessment, Assessment
+
+
+class AssessmentSerializer(serializers.ModelSerializer):
+    """Serializer for Assessment model"""
+
+    assessment_type_name = serializers.CharField(
+        source="course_assessment_type.assessment_type.name",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Assessment
+        fields = [
+            "id",
+            "title",
+            "max_score",
+            "assessment_type_name",
+        ]
+        read_only_fields = [
+            "id",
+        ]
 
 
 class StudentAssessmentSerializer(serializers.ModelSerializer):
     """Serializer for StudentAssessment model"""
+
+    assessment = serializers.PrimaryKeyRelatedField(queryset=Assessment.objects.all())
+
+    def to_representation(self, instance):
+        """Return expanded assessment details while accepting a student-assessment on writes."""
+        data = super().to_representation(instance)
+        data["assessment"] = AssessmentSerializer(instance.assessment).data
+        return data
 
     class Meta:
         model = StudentAssessment

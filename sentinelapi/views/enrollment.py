@@ -117,6 +117,16 @@ class EnrollmentViewSet(viewsets.ViewSet):
     def create(self, request):
         """Handle POST requests to enroll a student into a course."""
 
+        # First check that there isn't an existing enrollment for this student and course
+        student_id = request.data.get("student")
+        course_id = request.data.get("course")
+        if Enrollment.objects.filter(
+            student__id=student_id, course__id=course_id
+        ).exists():
+            return response.Response(
+                {"detail": "Student is already enrolled in this course."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = EnrollmentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

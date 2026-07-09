@@ -17,7 +17,6 @@ class AssessmentSerializer(serializers.ModelSerializer):
         source="course_assessment_type.id",
         read_only=True,
     )
-
     assessment_type_name = serializers.CharField(
         source="course_assessment_type.assessment_type.name",
         read_only=True,
@@ -55,9 +54,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
         """Return course/type fields flattened for client filtering and display."""
         data = super().to_representation(instance)
         data["course_id"] = instance.course_assessment_type.course_id
-        data["assessment_type_id"] = (
-            instance.course_assessment_type.assessment_type_id
-        )
+        data["assessment_type_id"] = instance.course_assessment_type.assessment_type_id
         return data
 
     def validate(self, attrs):
