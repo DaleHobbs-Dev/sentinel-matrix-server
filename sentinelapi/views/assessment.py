@@ -168,11 +168,7 @@ class AssessmentViewSet(viewsets.ViewSet):
                 student_assessment_id = student_assessment.get("id")
                 if student_assessment_id is None:
                     return Response(
-                        {
-                            "detail": (
-                                f"student_assessments[{index}].id is required."
-                            )
-                        },
+                        {"detail": (f"student_assessments[{index}].id is required.")},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
