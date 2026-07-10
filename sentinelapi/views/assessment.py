@@ -1,11 +1,14 @@
 """Views for handling assessment-related API requests."""
 
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from sentinelapi.models import Assessment
+from sentinelapi.models import Assessment, StudentAssessment
 from sentinelapi.serializers import AssessmentSerializer
+from sentinelapi.views.student_assessment import StudentAssessmentSerializer
 
 
 class AssessmentViewSet(viewsets.ViewSet):
@@ -115,6 +118,113 @@ class AssessmentViewSet(viewsets.ViewSet):
             )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get", "patch"], url_path="student-assessments")
+    def student_assessments(self, request, pk=None):
+        """Retrieve or partially update student assessments for a specific assessment."""
+        try:
+            assessment = Assessment.objects.get(
+                pk=pk,
+                course_assessment_type__course__instructor__user=request.user,
+            )
+        except Assessment.DoesNotExist:
+            return Response(
+                {"detail": "Assessment not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        student_assessments = StudentAssessment.objects.filter(
+            assessment=assessment,
+        ).select_related("enrollment", "assessment")
+
+        if request.method == "GET":
+            serializer = StudentAssessmentSerializer(
+                student_assessments,
+                context={"request": request},
+                many=True,
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        if request.method == "PATCH":
+            updates = request.data.get("student_assessments")
+            if not isinstance(updates, list):
+                return Response(
+                    {"detail": "student_assessments must be a list."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            serializers_to_save = []
+            for index, student_assessment in enumerate(updates):
+                if not isinstance(student_assessment, dict):
+                    return Response(
+                        {
+                            "detail": (
+                                f"student_assessments[{index}] must be an object."
+                            )
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                student_assessment_id = student_assessment.get("id")
+                if student_assessment_id is None:
+                    return Response(
+                        {
+                            "detail": (
+                                f"student_assessments[{index}].id is required."
+                            )
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                try:
+                    student_assessment_instance = student_assessments.get(
+                        pk=student_assessment_id
+                    )
+                except StudentAssessment.DoesNotExist:
+                    return Response(
+                        {
+                            "detail": (
+                                "Student assessment not found for this assessment."
+                            )
+                        },
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+                data = student_assessment.copy()
+                if data.get("is_missing") is True:
+                    data["score"] = None
+                    data["completed_date"] = None
+                elif data.get("score") is not None and "score" in data:
+                    data.setdefault(
+                        "completed_date",
+                        timezone.now().isoformat(),
+                    )
+
+                serializer = StudentAssessmentSerializer(
+                    student_assessment_instance,
+                    data=data,
+                    partial=True,
+                    context={"request": request},
+                )
+                serializer.is_valid(raise_exception=True)
+                serializers_to_save.append(serializer)
+
+            try:
+                with transaction.atomic():
+                    for serializer in serializers_to_save:
+                        serializer.save()
+            except IntegrityError:
+                return Response(
+                    {"detail": "Unable to update student assessments."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            serializer = StudentAssessmentSerializer(
+                student_assessments,
+                context={"request": request},
+                many=True,
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         """Delete an assessment owned by the instructor."""
