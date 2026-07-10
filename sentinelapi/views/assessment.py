@@ -6,7 +6,7 @@ from django.utils import timezone
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from sentinelapi.models import Assessment, StudentAssessment
+from sentinelapi.models import Assessment, Enrollment, StudentAssessment
 from sentinelapi.serializers import AssessmentSerializer
 from sentinelapi.views.student_assessment import StudentAssessmentSerializer
 
@@ -165,28 +165,73 @@ class AssessmentViewSet(viewsets.ViewSet):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                student_assessment_id = student_assessment.get("id")
-                if student_assessment_id is None:
-                    return Response(
-                        {"detail": (f"student_assessments[{index}].id is required.")},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                try:
-                    student_assessment_instance = student_assessments.get(
-                        pk=student_assessment_id
-                    )
-                except StudentAssessment.DoesNotExist:
-                    return Response(
-                        {
-                            "detail": (
-                                "Student assessment not found for this assessment."
-                            )
-                        },
-                        status=status.HTTP_404_NOT_FOUND,
-                    )
-
                 data = student_assessment.copy()
+                data["assessment"] = assessment.id
+
+                student_assessment_id = student_assessment.get("id")
+                enrollment_id = student_assessment.get("enrollment")
+
+                if student_assessment_id is not None:
+                    try:
+                        student_assessment_instance = student_assessments.get(
+                            pk=student_assessment_id
+                        )
+                    except StudentAssessment.DoesNotExist:
+                        return Response(
+                            {
+                                "detail": (
+                                    "Student assessment not found for this assessment."
+                                )
+                            },
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+                    if (
+                        enrollment_id is not None
+                        and str(enrollment_id)
+                        != str(student_assessment_instance.enrollment_id)
+                    ):
+                        return Response(
+                            {
+                                "detail": (
+                                    f"student_assessments[{index}].enrollment does "
+                                    "not match the student assessment."
+                                )
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    data["enrollment"] = student_assessment_instance.enrollment_id
+                else:
+                    if enrollment_id is None:
+                        return Response(
+                            {
+                                "detail": (
+                                    f"student_assessments[{index}].id or "
+                                    "enrollment is required."
+                                )
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                    try:
+                        enrollment = Enrollment.objects.get(
+                            pk=enrollment_id,
+                            course=assessment.course_assessment_type.course,
+                        )
+                    except Enrollment.DoesNotExist:
+                        return Response(
+                            {
+                                "detail": (
+                                    "Enrollment not found for this assessment's course."
+                                )
+                            },
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+
+                    student_assessment_instance = student_assessments.filter(
+                        enrollment=enrollment
+                    ).first()
+                    data["enrollment"] = enrollment.id
+
                 if data.get("is_missing") is True:
                     data["score"] = None
                     data["completed_date"] = None
@@ -196,12 +241,18 @@ class AssessmentViewSet(viewsets.ViewSet):
                         timezone.now().isoformat(),
                     )
 
-                serializer = StudentAssessmentSerializer(
-                    student_assessment_instance,
-                    data=data,
-                    partial=True,
-                    context={"request": request},
-                )
+                if student_assessment_instance is None:
+                    serializer = StudentAssessmentSerializer(
+                        data=data,
+                        context={"request": request},
+                    )
+                else:
+                    serializer = StudentAssessmentSerializer(
+                        student_assessment_instance,
+                        data=data,
+                        partial=True,
+                        context={"request": request},
+                    )
                 serializer.is_valid(raise_exception=True)
                 serializers_to_save.append(serializer)
 

@@ -182,6 +182,83 @@ class AssessmentStudentAssessmentActionTests(APITestCase):
         self.assertIsNone(self.student_assessments[1].completed_date)
         self.assertTrue(self.student_assessments[1].is_missing)
 
+    def test_student_assessments_action_creates_row_from_enrollment(self):
+        student_assessment = self.student_assessments[1]
+        enrollment = student_assessment.enrollment
+        student_assessment.delete()
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.patch(
+            f"/assessments/{self.assessment.id}/student-assessments",
+            {
+                "student_assessments": [
+                    {
+                        "enrollment": enrollment.id,
+                        "score": "88.00",
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        created = StudentAssessment.objects.get(
+            enrollment=enrollment,
+            assessment=self.assessment,
+        )
+        self.assertEqual(created.score, Decimal("88.00"))
+        self.assertIsNotNone(created.completed_date)
+        self.assertFalse(created.is_missing)
+
+    def test_student_assessments_action_updates_existing_row_from_enrollment(self):
+        enrollment = self.student_assessments[0].enrollment
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.patch(
+            f"/assessments/{self.assessment.id}/student-assessments",
+            {
+                "student_assessments": [
+                    {
+                        "enrollment": enrollment.id,
+                        "score": "91.00",
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.student_assessments[0].refresh_from_db()
+        self.assertEqual(self.student_assessments[0].score, Decimal("91.00"))
+        self.assertEqual(
+            StudentAssessment.objects.filter(
+                enrollment=enrollment,
+                assessment=self.assessment,
+            ).count(),
+            1,
+        )
+
+    def test_student_assessments_action_requires_id_or_enrollment(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.patch(
+            f"/assessments/{self.assessment.id}/student-assessments",
+            {
+                "student_assessments": [
+                    {
+                        "score": "91.00",
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["detail"],
+            "student_assessments[0].id or enrollment is required.",
+        )
+
     def test_student_assessments_action_rejects_rows_for_other_assessments(self):
         other_assessment = Assessment.objects.create(
             course_assessment_type=self.course_assessment_type,
