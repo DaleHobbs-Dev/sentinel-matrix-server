@@ -1,3 +1,5 @@
+"""Test cases for verifying computed fields and serialization of enrollments."""
+
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -20,6 +22,8 @@ User = get_user_model()
 
 
 class EnrollmentComputedFieldTests(TestCase):
+    """Test cases for verifying computed fields and serialization of enrollments."""
+
     def setUp(self):
         user = User.objects.create_user(
             email="professor@example.com",
@@ -40,7 +44,7 @@ class EnrollmentComputedFieldTests(TestCase):
             student_id="S1001",
             email="ada@example.com",
             enrollment_date="2026-07-06",
-            prior_academic_standing=Student.AcademicStanding.AT_RISK,
+            prior_academic_standing=Student.AcademicStanding.POOR,
         )
         self.enrollment = Enrollment.objects.create(
             student=self.student,
@@ -100,27 +104,30 @@ class EnrollmentComputedFieldTests(TestCase):
         )
 
     def test_enrollment_computed_fields_use_enrollment_assessments(self):
+        """Test that the enrollment's computed fields are correctly calculated based on its assessments."""
         self.assertEqual(self.enrollment.grade_average, Decimal("80.00"))
-        self.assertEqual(self.enrollment.prior_academic_standing, "at risk")
+        self.assertEqual(self.enrollment.prior_academic_standing, "poor")
         self.assertEqual(self.enrollment.missing_assignment_rate, Decimal("50.00"))
-        self.assertEqual(self.enrollment.risk_score, Decimal("75.00"))
+        self.assertEqual(self.enrollment.risk_score, Decimal("74.00"))
 
     def test_enrollment_serializer_presents_computed_fields(self):
+        """Test that the enrollment serializer correctly presents the computed fields."""
         data = EnrollmentSerializer(self.enrollment).data
 
         self.assertEqual(data["grade_average"], Decimal("80.00"))
-        self.assertEqual(data["prior_academic_standing"], "at risk")
+        self.assertEqual(data["prior_academic_standing"], "poor")
         self.assertEqual(data["missing_assignment_rate"], Decimal("50.00"))
-        self.assertEqual(data["risk_score"], Decimal("75.00"))
+        self.assertEqual(data["risk_score"], Decimal("74.00"))
 
     def test_enrollment_serializer_accepts_student_and_course_ids(self):
+        """Test that the enrollment serializer accepts student and course IDs for creating enrollments."""
         other_student = Student.objects.create(
             first_name="Grace",
             last_name="Hopper",
             student_id="S1002",
             email="grace@example.com",
             enrollment_date="2026-07-06",
-            prior_academic_standing=Student.AcademicStanding.GOOD,
+            prior_academic_standing=Student.AcademicStanding.GREAT,
         )
         serializer = EnrollmentSerializer(
             data={

@@ -1,3 +1,5 @@
+"""Tests for Student API Methods"""
+
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -20,6 +22,8 @@ User = get_user_model()
 
 
 class StudentComputedFieldTests(TestCase):
+    """Test cases for verifying computed fields and serialization of students."""
+
     def setUp(self):
         user = User.objects.create_user(
             email="professor@example.com",
@@ -34,7 +38,7 @@ class StudentComputedFieldTests(TestCase):
             student_id="S1001",
             email="ada@example.com",
             enrollment_date="2026-07-06",
-            prior_academic_standing=Student.AcademicStanding.GOOD,
+            prior_academic_standing=Student.AcademicStanding.EXCELLENT,
         )
 
         homework_type = AssessmentType.objects.create(name="Homework")
@@ -100,18 +104,21 @@ class StudentComputedFieldTests(TestCase):
             )
 
     def test_student_computed_fields_use_all_enrollments(self):
+        """Test that the student's computed fields are correctly calculated based on all their enrollments."""
         self.assertEqual(self.student.grade_average, Decimal("85.00"))
         self.assertEqual(self.student.attendance_rate, Decimal("87.50"))
         self.assertEqual(self.student.missing_assignment_rate, Decimal("50.00"))
         self.assertEqual(self.student.assignment_completion_rate, Decimal("50.00"))
-        self.assertEqual(self.student.risk_score, Decimal("79.25"))
+        self.assertEqual(self.student.risk_score, Decimal("80.25"))
         self.assertEqual(self.student.risk_band, "Low Risk")
 
     def test_student_serializer_presents_computed_fields(self):
+        """Test that the student serializer correctly presents the computed fields."""
         data = StudentSerializer(self.student).data
 
         self.assertEqual(data["grade_average"], Decimal("85.00"))
         self.assertEqual(data["attendance_rate"], Decimal("87.50"))
         self.assertEqual(data["missing_assignment_rate"], Decimal("50.00"))
-        self.assertEqual(data["risk_score"], Decimal("79.25"))
+        self.assertEqual(data["assignment_completion_rate"], Decimal("50.00"))
+        self.assertEqual(data["risk_score"], Decimal("80.25"))
         self.assertEqual(data["risk_band"], "Low Risk")

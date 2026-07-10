@@ -134,6 +134,12 @@ class LoginSerializer(serializers.Serializer):
         attrs["user"] = user
         return attrs
 
+    class Meta:
+        fields = [
+            "email",
+            "password",
+        ]
+
 
 def _auth_response(user, http_status=status.HTTP_200_OK):
     """Return the shared auth response shape used by register and login."""

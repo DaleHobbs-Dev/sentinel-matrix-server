@@ -3,10 +3,16 @@
 from django.apps import apps
 from django.db import models
 
-from sentinelapi.services.student_metrics import (
+from sentinelapi.constants import (
+    ACADEMIC_STANDING_AVERAGE,
+    ACADEMIC_STANDING_CHOICES,
+    ACADEMIC_STANDING_EXCELLENT,
+    ACADEMIC_STANDING_GREAT,
+    ACADEMIC_STANDING_POOR,
+    ACADEMIC_STANDING_VALUES,
     PRIOR_ACADEMIC_STANDING_SCORES,
-    StudentMetricCalculator,
 )
+from sentinelapi.services.student_metrics import StudentMetricCalculator
 
 
 # Blueprint for the Student objects
@@ -23,26 +29,33 @@ class Student(models.Model):
     email = models.EmailField(unique=True)
     enrollment_date = models.DateField()
 
-    # Academic Standing class with choices for "Good" and "At Risk"
+    # Academic Standing class with choices for "Excellent", "Great", "Average", and "Poor"
     class AcademicStanding(models.TextChoices):
         """Choices for Academic Standing of Students"""
 
-        GOOD = "good", "Good"
-        AT_RISK = "at risk", "At Risk"
+        EXCELLENT = ACADEMIC_STANDING_EXCELLENT, "Excellent"
+        GREAT = ACADEMIC_STANDING_GREAT, "Great"
+        AVERAGE = ACADEMIC_STANDING_AVERAGE, "Average"
+        POOR = ACADEMIC_STANDING_POOR, "Poor"
 
     prior_academic_standing = models.CharField(
         max_length=100,
-        choices=AcademicStanding.choices,
-        default=AcademicStanding.GOOD,
+        choices=ACADEMIC_STANDING_CHOICES,
+        default=AcademicStanding.EXCELLENT,
     )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
+    @property
+    def full_name(self):
+        """Return the student's display name."""
+        return f"{self.first_name} {self.last_name}"
+
     def _get_student_assessments(self):
         """Get all StudentAssessments attached to this student's enrollments."""
-        StudentAssessment = apps.get_model("sentinelapi", "StudentAssessment")
-        return StudentAssessment.objects.filter(enrollment__student=self)
+        student_assessment = apps.get_model("sentinelapi", "StudentAssessment")
+        return student_assessment.objects.filter(enrollment__student=self)
 
     def _get_academic_assessments(self):
         """Get all non-attendance-type StudentAssessments for this student."""
@@ -97,12 +110,14 @@ class Student(models.Model):
     class Meta:
         """
         Ensure that the prior_academic_standing field
-        can only have values of 'good' or 'at risk'
+        can only have values of 'excellent', 'great', 'average', or 'poor'
         """
 
         constraints = [
             models.CheckConstraint(
-                condition=models.Q(prior_academic_standing__in=["good", "at risk"]),
+                condition=models.Q(
+                    prior_academic_standing__in=ACADEMIC_STANDING_VALUES
+                ),
                 name="valid_prior_academic_standing",
             ),
         ]
