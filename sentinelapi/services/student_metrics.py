@@ -2,11 +2,7 @@
 
 from decimal import Decimal
 
-
-PRIOR_ACADEMIC_STANDING_SCORES = {
-    "good": Decimal("90"),
-    "at risk": Decimal("60"),
-}
+from sentinelapi.constants import PRIOR_ACADEMIC_STANDING_SCORES
 
 
 class StudentMetricCalculator:

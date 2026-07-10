@@ -7,7 +7,7 @@
       "last_name": "Thompson",
       "student_id": "A00000001",
       "email": "maya.thompson@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "excellent",
       "enrollment_date": "2025-05-12"
     }
   },
@@ -19,7 +19,7 @@
       "last_name": "Carter",
       "student_id": "A00000002",
       "email": "liam.carter@example.edu",
-      "prior_academic_standing": "at risk",
+      "prior_academic_standing": "poor",
       "enrollment_date": "2025-05-27"
     }
   },
@@ -31,7 +31,7 @@
       "last_name": "Ramirez",
       "student_id": "A00000003",
       "email": "sofia.ramirez@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "great",
       "enrollment_date": "2025-06-03"
     }
   },
@@ -43,7 +43,7 @@
       "last_name": "Williams",
       "student_id": "A00000004",
       "email": "noah.williams@example.edu",
-      "prior_academic_standing": "at risk",
+      "prior_academic_standing": "poor",
       "enrollment_date": "2025-06-18"
     }
   },
@@ -55,7 +55,7 @@
       "last_name": "Nguyen",
       "student_id": "A00000005",
       "email": "ava.nguyen@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "great",
       "enrollment_date": "2025-07-01"
     }
   },
@@ -67,7 +67,7 @@
       "last_name": "Brooks",
       "student_id": "A00000006",
       "email": "ethan.brooks@example.edu",
-      "prior_academic_standing": "at risk",
+      "prior_academic_standing": "poor",
       "enrollment_date": "2025-07-09"
     }
   },
@@ -79,7 +79,7 @@
       "last_name": "Johnson",
       "student_id": "A00000007",
       "email": "isabella.johnson@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "average",
       "enrollment_date": "2025-07-17"
     }
   },
@@ -91,7 +91,7 @@
       "last_name": "Patel",
       "student_id": "A00000008",
       "email": "lucas.patel@example.edu",
-      "prior_academic_standing": "at risk",
+      "prior_academic_standing": "poor",
       "enrollment_date": "2025-07-28"
     }
   },
@@ -103,7 +103,7 @@
       "last_name": "Davis",
       "student_id": "A00000009",
       "email": "amelia.davis@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "excellent",
       "enrollment_date": "2025-08-04"
     }
   },
@@ -115,7 +115,7 @@
       "last_name": "Hernandez",
       "student_id": "A00000010",
       "email": "mateo.hernandez@example.edu",
-      "prior_academic_standing": "at risk",
+      "prior_academic_standing": "poor",
       "enrollment_date": "2025-08-11"
     }
   },
@@ -127,7 +127,7 @@
       "last_name": "Wilson",
       "student_id": "A00000011",
       "email": "harper.wilson@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "great",
       "enrollment_date": "2025-08-19"
     }
   },
@@ -139,7 +139,7 @@
       "last_name": "Kim",
       "student_id": "A00000012",
       "email": "elijah.kim@example.edu",
-      "prior_academic_standing": "at risk",
+      "prior_academic_standing": "poor",
       "enrollment_date": "2025-08-30"
     }
   },
@@ -151,7 +151,7 @@
       "last_name": "Anderson",
       "student_id": "A00000013",
       "email": "zoe.anderson@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "average",
       "enrollment_date": "2025-11-05"
     }
   },
@@ -163,7 +163,7 @@
       "last_name": "Robinson",
       "student_id": "A00000014",
       "email": "james.robinson@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "excellent",
       "enrollment_date": "2025-11-19"
     }
   },
@@ -175,7 +175,7 @@
       "last_name": "Martinez",
       "student_id": "A00000015",
       "email": "layla.martinez@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "great",
       "enrollment_date": "2025-12-02"
     }
   },
@@ -187,7 +187,7 @@
       "last_name": "Clark",
       "student_id": "A00000016",
       "email": "benjamin.clark@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "average",
       "enrollment_date": "2025-12-15"
     }
   },
@@ -199,7 +199,7 @@
       "last_name": "Lewis",
       "student_id": "A00000017",
       "email": "nora.lewis@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "average",
       "enrollment_date": "2025-12-29"
     }
   },
@@ -211,7 +211,7 @@
       "last_name": "Walker",
       "student_id": "A00000018",
       "email": "henry.walker@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "great",
       "enrollment_date": "2026-01-06"
     }
   },
@@ -223,7 +223,7 @@
       "last_name": "Young",
       "student_id": "A00000019",
       "email": "chloe.young@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "excellent",
       "enrollment_date": "2026-01-14"
     }
   },
@@ -235,7 +235,7 @@
       "last_name": "Allen",
       "student_id": "A00000020",
       "email": "daniel.allen@example.edu",
-      "prior_academic_standing": "good",
+      "prior_academic_standing": "great",
       "enrollment_date": "2026-01-20"
     }
   }

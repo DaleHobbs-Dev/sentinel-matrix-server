@@ -1,3 +1,5 @@
+"""Tests for Student Assessment API Methods"""
+
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -20,6 +22,8 @@ User = get_user_model()
 
 
 class StudentAssessmentMissingStateTests(TestCase):
+    """Test cases for verifying the behavior of the 'is_missing' state in student assessments."""
+
     def setUp(self):
         user = User.objects.create_user(
             email="professor@example.com",
@@ -40,7 +44,7 @@ class StudentAssessmentMissingStateTests(TestCase):
             student_id="S1001",
             email="ada@example.com",
             enrollment_date="2026-07-06",
-            prior_academic_standing=Student.AcademicStanding.GOOD,
+            prior_academic_standing=Student.AcademicStanding.EXCELLENT,
         )
         self.enrollment = Enrollment.objects.create(student=student, course=course)
 
@@ -59,6 +63,7 @@ class StudentAssessmentMissingStateTests(TestCase):
         )
 
     def test_model_marks_unscored_assessment_missing(self):
+        """Test that an unscored student assessment is automatically marked as missing."""
         student_assessment = StudentAssessment.objects.create(
             enrollment=self.enrollment,
             assessment=self.assessment,
@@ -68,6 +73,7 @@ class StudentAssessmentMissingStateTests(TestCase):
         self.assertTrue(student_assessment.is_missing)
 
     def test_model_clears_missing_when_score_is_saved(self):
+        """Test that a student assessment marked as missing is cleared when a score is saved."""
         student_assessment = StudentAssessment.objects.create(
             enrollment=self.enrollment,
             assessment=self.assessment,
@@ -83,6 +89,7 @@ class StudentAssessmentMissingStateTests(TestCase):
         self.assertFalse(student_assessment.is_missing)
 
     def test_serializer_create_without_score_marks_assessment_missing(self):
+        """Test that creating a student assessment without a score automatically marks it as missing."""
         serializer = StudentAssessmentSerializer(
             data={
                 "enrollment": self.enrollment.id,
@@ -96,6 +103,7 @@ class StudentAssessmentMissingStateTests(TestCase):
         self.assertTrue(student_assessment.is_missing)
 
     def test_serializer_update_with_score_clears_missing(self):
+        """Test that updating a student assessment with a score clears the missing status."""
         student_assessment = StudentAssessment.objects.create(
             enrollment=self.enrollment,
             assessment=self.assessment,
@@ -118,6 +126,7 @@ class StudentAssessmentMissingStateTests(TestCase):
         self.assertFalse(updated.is_missing)
 
     def test_serializer_full_update_without_score_marks_missing(self):
+        """Test that a full update of a student assessment without a score marks it as missing."""
         student_assessment = StudentAssessment.objects.create(
             enrollment=self.enrollment,
             assessment=self.assessment,
@@ -140,6 +149,7 @@ class StudentAssessmentMissingStateTests(TestCase):
         self.assertTrue(updated.is_missing)
 
     def test_serializer_partial_update_without_score_marks_missing(self):
+        """Test that a partial update of a student assessment without a score marks it as missing."""
         student_assessment = StudentAssessment.objects.create(
             enrollment=self.enrollment,
             assessment=self.assessment,

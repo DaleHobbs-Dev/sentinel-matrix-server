@@ -1,83 +1,9 @@
 """Views for handling student-related API endpoints"""
 
 from django.db.models import Q
-from rest_framework import permissions, serializers, viewsets, response, status
-
-from sentinelapi.models import Student, Course
-
-
-class CourseSerializer(serializers.ModelSerializer):
-    """Serializer for Course model"""
-
-    class Meta:
-        model = Course
-        fields = [
-            "id",
-            "course_name",
-            "is_active",
-        ]
-        read_only_fields = [
-            "id",
-        ]
-
-
-class StudentSerializer(serializers.ModelSerializer):
-    """Serializer for the Student model."""
-
-    current_courses = serializers.SerializerMethodField()
-    grade_average = serializers.SerializerMethodField(read_only=True)
-    attendance_rate = serializers.SerializerMethodField(read_only=True)
-    missing_assignment_rate = serializers.SerializerMethodField(read_only=True)
-    risk_score = serializers.SerializerMethodField(read_only=True)
-    risk_band = serializers.SerializerMethodField(read_only=True)
-
-    def get_current_courses(self, obj):
-        """Get the courses the student is currently enrolled in."""
-        courses = [
-            enrollment.course
-            for enrollment in obj.enrollments.all()
-            if enrollment.course.is_active
-        ]
-
-        return CourseSerializer(courses, many=True, context=self.context).data
-
-    def get_grade_average(self, obj):
-        """Get the student's grade average."""
-        return obj.grade_average
-
-    def get_attendance_rate(self, obj):
-        """Get the student's attendance rate."""
-        return obj.attendance_rate
-
-    def get_missing_assignment_rate(self, obj):
-        """Get the student's missing assignment rate."""
-        return obj.missing_assignment_rate
-
-    def get_risk_score(self, obj):
-        """Get the student's risk score."""
-        return obj.risk_score
-
-    def get_risk_band(self, obj):
-        """Get the student's risk band."""
-        return obj.risk_band
-
-    class Meta:
-        model = Student
-        fields = (
-            "id",
-            "first_name",
-            "last_name",
-            "student_id",
-            "email",
-            "prior_academic_standing",
-            "enrollment_date",
-            "current_courses",
-            "grade_average",
-            "attendance_rate",
-            "missing_assignment_rate",
-            "risk_score",
-            "risk_band",
-        )
+from rest_framework import permissions, viewsets, response, status
+from sentinelapi.models import Student
+from sentinelapi.serializers import StudentSerializer
 
 
 class StudentViewSet(viewsets.ViewSet):
