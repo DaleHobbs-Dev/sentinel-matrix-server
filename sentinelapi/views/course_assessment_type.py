@@ -26,7 +26,7 @@ class CourseAssessmentTypeSerializer(serializers.ModelSerializer):
             "weight",
             "risk_score_weight",
         ]
-        read_only_fields = ["id", "assessment_type_name"]
+        read_only_fields = ["id", "assessment_type_name", "risk_score_weight"]
 
     def validate_course(self, value):
         """Only allow instructors to configure their own courses."""

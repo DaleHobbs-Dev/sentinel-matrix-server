@@ -311,7 +311,7 @@ class CourseCreateTests(APITestCase):
         self.assertEqual(configs["Attendance"].weight, Decimal("20.00"))
         self.assertEqual(
             configs["Attendance"].risk_score_weight,
-            Decimal("60.00"),
+            Decimal("30.00"),
         )
         self.assertEqual(configs["Homework"].weight, Decimal("80.00"))
         self.assertEqual(

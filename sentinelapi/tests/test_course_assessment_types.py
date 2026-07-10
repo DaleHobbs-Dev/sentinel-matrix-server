@@ -85,8 +85,9 @@ class CourseAssessmentTypeViewSetTests(APITestCase):
         self.assertEqual(response.data["course"], self.course.id)
         self.assertEqual(response.data["assessment_type"], self.attendance_type.id)
         self.assertEqual(response.data["assessment_type_name"], "Attendance")
+        self.assertEqual(response.data["risk_score_weight"], "30.00")
 
-    def test_patch_updates_weights(self):
+    def test_patch_updates_weight_but_keeps_risk_score_weight_fixed(self):
         self.client.force_authenticate(user=self.user)
 
         response = self.client.patch(
@@ -103,5 +104,16 @@ class CourseAssessmentTypeViewSetTests(APITestCase):
         self.assertEqual(self.homework_config.weight, Decimal("75.00"))
         self.assertEqual(
             self.homework_config.risk_score_weight,
-            Decimal("45.00"),
+            Decimal("40.00"),
         )
+        self.assertEqual(response.data["risk_score_weight"], "40.00")
+
+    def test_model_sets_fixed_risk_score_weight(self):
+        config = CourseAssessmentType.objects.create(
+            course=self.course,
+            assessment_type=self.attendance_type,
+            weight=Decimal("20"),
+            risk_score_weight=Decimal("99"),
+        )
+
+        self.assertEqual(config.risk_score_weight, Decimal("30.00"))

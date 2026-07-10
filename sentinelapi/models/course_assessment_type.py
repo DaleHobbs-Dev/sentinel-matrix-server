@@ -1,5 +1,7 @@
 """Model for CourseAssessmentType - Defining types of assessments for courses"""
 
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from .assessment_type import AssessmentType
@@ -7,6 +9,9 @@ from .assessment_type import AssessmentType
 
 class CourseAssessmentType(models.Model):
     """Configuration of an assessment type within a course."""
+
+    ATTENDANCE_RISK_SCORE_WEIGHT = Decimal("30.00")
+    ACADEMIC_RISK_SCORE_WEIGHT = Decimal("40.00")
 
     course = models.ForeignKey(
         "sentinelapi.Course",
@@ -37,3 +42,22 @@ class CourseAssessmentType(models.Model):
                 name="unique_assessment_type_per_course",
             )
         ]
+
+    @classmethod
+    def fixed_risk_score_weight_for(cls, assessment_type_name):
+        """Return the MVP risk score weight for an assessment type name."""
+        if assessment_type_name.lower() == "attendance":
+            return cls.ATTENDANCE_RISK_SCORE_WEIGHT
+
+        return cls.ACADEMIC_RISK_SCORE_WEIGHT
+
+    def save(self, *args, **kwargs):
+        """Keep risk score weighting fixed to the MVP risk formula."""
+        self.risk_score_weight = self.fixed_risk_score_weight_for(
+            self.assessment_type.name
+        )
+        if kwargs.get("update_fields") is not None:
+            kwargs["update_fields"] = set(kwargs["update_fields"]) | {
+                "risk_score_weight"
+            }
+        super().save(*args, **kwargs)

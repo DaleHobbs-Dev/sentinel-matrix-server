@@ -42,6 +42,7 @@ class CourseDashboardStudentSerializer(serializers.Serializer):
     """Serializer for a student's course-specific dashboard metrics."""
 
     id = serializers.IntegerField(source="student.id", read_only=True)
+    enrollment_id = serializers.IntegerField(source="id", read_only=True)
     student_id = serializers.CharField(source="student.student_id", read_only=True)
     first_name = serializers.CharField(source="student.first_name", read_only=True)
     last_name = serializers.CharField(source="student.last_name", read_only=True)
@@ -66,6 +67,7 @@ class CourseDashboardStudentSerializer(serializers.Serializer):
         model = Enrollment
         fields = [
             "id",
+            "enrollment_id",
             "student_id",
             "first_name",
             "last_name",
@@ -117,6 +119,7 @@ class InstructorDashboardRiskStudentSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(source="student.id", read_only=True)
     student_id = serializers.CharField(source="student.student_id", read_only=True)
+    enrollment_id = serializers.IntegerField(source="id", read_only=True)
     full_name = serializers.CharField(source="student.full_name", read_only=True)
     course_id = serializers.IntegerField(source="course.id", read_only=True)
     course = serializers.CharField(source="course.course_name", read_only=True)
@@ -132,6 +135,7 @@ class InstructorDashboardRiskStudentSerializer(serializers.Serializer):
         fields = [
             "id",
             "student_id",
+            "enrollment_id",
             "course_id",
             "full_name",
             "course",

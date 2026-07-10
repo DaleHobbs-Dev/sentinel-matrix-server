@@ -16,7 +16,7 @@
       "course": 1,
       "assessment_type": 2,
       "weight": "80.00",
-      "risk_score_weight": "70.00"
+      "risk_score_weight": "40.00"
     }
   },
   {
@@ -36,7 +36,7 @@
       "course": 2,
       "assessment_type": 2,
       "weight": "80.00",
-      "risk_score_weight": "70.00"
+      "risk_score_weight": "40.00"
     }
   },
   {
@@ -56,7 +56,7 @@
       "course": 3,
       "assessment_type": 2,
       "weight": "80.00",
-      "risk_score_weight": "70.00"
+      "risk_score_weight": "40.00"
     }
   }
 ]
