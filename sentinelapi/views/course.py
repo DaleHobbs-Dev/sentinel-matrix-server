@@ -69,9 +69,10 @@ class CourseViewSet(viewsets.ViewSet):
         except Course.DoesNotExist:
             return response.Response(status=status.HTTP_404_NOT_FOUND)
 
+    # Dashboard Endpoint for the primary "Dashboard" of a course
     @action(detail=True, methods=["get"], url_path="dashboard")
     def dashboard(self, request, pk=None):
-        """Handle GET requests for a course dashboard."""
+        """Handle GET requests for the Dashboard of a specific course."""
         try:
             course = Course.objects.prefetch_related(
                 Prefetch(
@@ -88,12 +89,20 @@ class CourseViewSet(viewsets.ViewSet):
         except Course.DoesNotExist:
             return response.Response(status=status.HTTP_404_NOT_FOUND)
 
+    # /courses/dashboard Endpoint for the instructor's primary "Dashboard" of the App (GET)
     @action(detail=False, methods=["get"], url_path="dashboard")
     def instructor_dashboard(self, request):
-        """Handle GET requests for the instructor's primary dashboard."""
+        """Handle GET requests for the instructor's primary Dashboard."""
         if not hasattr(request.user, "instructor"):
             return response.Response(status=status.HTTP_403_FORBIDDEN)
 
+        # use prefetch_related to do "reverse" lookups for enrollments and related student assessments
+        # Prefetch allows customizing the queryset for related objects, improving query efficiency.
+        # In order, this block of code is doing:
+        # 1. Filter courses by the current instructor.
+        # 2. Prefetch related enrollments and their associated student assessments.
+        # 3. Order enrollments by student last name and first name.
+        # 4. Order courses by course name.
         courses = list(
             Course.objects.filter(instructor=request.user.instructor)
             .prefetch_related(
