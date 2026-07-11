@@ -4,7 +4,6 @@ from decimal import Decimal
 
 from sentinelapi.models import AssessmentType, CourseAssessmentType
 
-
 DEFAULT_COURSE_ASSESSMENT_TYPES = (
     {
         "name": "Attendance",
@@ -17,6 +16,7 @@ DEFAULT_COURSE_ASSESSMENT_TYPES = (
 )
 
 
+# Helper method to create default course assessment types for a new course.
 def create_default_course_assessment_types(course):
     """Create the default assessment type configuration for a new course."""
     for config in DEFAULT_COURSE_ASSESSMENT_TYPES:

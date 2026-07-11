@@ -1,4 +1,16 @@
-"""Views for handling course-related API endpoints"""
+"""Views for Course related actions/methods.
+
+Methods allowed by this ViewSet:
+    list   -- Lists all courses for the requesting instructor, optionally filtered by active status and search query; requires auth.
+    retrieve   -- Retrieves a specific course by ID; requires auth.
+    create     -- Creates a new course; requires auth.
+    update     -- Fully updates an existing course; requires auth.
+    partial_update -- Partially updates an existing course; requires auth.
+    _update    -- Internal method to handle both full and partial updates of a course; requires auth.
+    destroy    -- Deletes a course; requires auth.
+    dashboard  -- Retrieves the dashboard for a specific course; requires auth.
+    instructor_dashboard -- Retrieves the main dashboard for platform; requires auth.
+"""
 
 from rest_framework import viewsets, permissions, status, response
 from rest_framework.decorators import action
@@ -126,6 +138,13 @@ class CourseViewSet(viewsets.ViewSet):
 
     def update(self, request, pk=None):
         """Handle PUT requests to update a single course by its primary key (pk)."""
+        return self._update(request, pk, partial=False)
+
+    def partial_update(self, request, pk=None):
+        """Handle PATCH requests to partially update a single course by its primary key (pk)."""
+        return self._update(request, pk, partial=True)
+
+    def _update(self, request, pk, partial):
         try:
             course = Course.objects.get(pk=pk)
 
@@ -134,26 +153,10 @@ class CourseViewSet(viewsets.ViewSet):
                 return response.Response(status=status.HTTP_403_FORBIDDEN)
 
             serializer = CourseSerializer(
-                course, data=request.data, context={"request": request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(instructor=request.user.instructor)
-            return response.Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Course.DoesNotExist:
-            return response.Response(status=status.HTTP_404_NOT_FOUND)
-
-    def partial_update(self, request, pk=None):
-        """Handle PATCH requests to partially update a single course by its primary key (pk)."""
-        try:
-            course = Course.objects.get(pk=pk)
-
-            # Only allow the owner of the course to partially update it
-            if course.instructor.user != request.user:
-                return response.Response(status=status.HTTP_403_FORBIDDEN)
-
-            serializer = CourseSerializer(
-                course, data=request.data, partial=True, context={"request": request}
+                course,
+                data=request.data,
+                partial=partial,
+                context={"request": request},
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(instructor=request.user.instructor)

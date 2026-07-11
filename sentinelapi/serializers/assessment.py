@@ -48,6 +48,8 @@ class AssessmentSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Return course/type fields flattened for client filtering and display."""
+        # super() extends the built-in serialized representation of the
+        # instance with additional course/type fields.
         data = super().to_representation(instance)
         data["course_id"] = instance.course_assessment_type.course_id
         data["assessment_type_id"] = instance.course_assessment_type.assessment_type_id

@@ -1,4 +1,9 @@
-"""Views for handling student-related API endpoints"""
+"""Views for Student related actions/methods.
+
+Methods allowed by this ViewSet:
+    list   -- Lists all students, optionally filtered by a search query; requires auth.
+    retrieve   -- Retrieves a specific student by ID; requires auth.
+"""
 
 from django.db.models import Q
 from rest_framework import permissions, viewsets, response, status

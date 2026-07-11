@@ -1,4 +1,21 @@
-"""Model for Students"""
+"""Models for Student data.
+
+Models included in this module:
+    Student -- Represents a student and their academic information.
+
+Custom properties and helper methods included in this module:
+    full_name          -- Returns the student's full name.
+    _get_student_assessments -- Retrieves all assessments for the student.
+    _get_academic_assessments -- Retrieves all academic (non-attendance) assessments for the student.
+    _get_attendance_assessments -- Retrieves all attendance-type assessments for the student.
+    _metric_calculator -- Returns a metric calculator scoped to the student's assessments.
+    grade_average      -- Returns the student's grade average.
+    attendance_rate    -- Returns the student's attendance rate.
+    missing_assignment_rate -- Returns the student's missing assignment rate.
+    assignment_completion_rate -- Returns the student's assignment completion rate.
+    risk_score         -- Returns the student's risk score.
+    risk_band          -- Returns the student's risk band.
+"""
 
 from django.apps import apps
 from django.db import models
@@ -10,6 +27,7 @@ from sentinelapi.constants import (
     ACADEMIC_STANDING_GREAT,
     ACADEMIC_STANDING_POOR,
     ACADEMIC_STANDING_VALUES,
+    ASSESSMENT_TYPE_ATTENDANCE,
     PRIOR_ACADEMIC_STANDING_SCORES,
 )
 from sentinelapi.services.student_metrics import StudentMetricCalculator
@@ -47,28 +65,36 @@ class Student(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
+    # Custom property to return the student's full name.
     @property
     def full_name(self):
         """Return the student's display name."""
         return f"{self.first_name} {self.last_name}"
 
+    # Helper method to retrieve all assessments for this student.
     def _get_student_assessments(self):
         """Get all StudentAssessments attached to this student's enrollments."""
         student_assessment = apps.get_model("sentinelapi", "StudentAssessment")
         return student_assessment.objects.filter(enrollment__student=self)
 
+    # Helper method to retrieve all academic (non-attendance) assessments for this student.
+    # Traverse all student assessments and filter out attendance-type assessments.
+    # iexact is used to perform a case-insensitive exact match on the assessment type name.
     def _get_academic_assessments(self):
         """Get all non-attendance-type StudentAssessments for this student."""
         return self._get_student_assessments().exclude(
-            assessment__course_assessment_type__assessment_type__name__iexact="attendance"
+            assessment__course_assessment_type__assessment_type__name__iexact=ASSESSMENT_TYPE_ATTENDANCE
         )
 
+    # Helper method to retrieve all attendance-type assessments for this student.
     def _get_attendance_assessments(self):
         """Get all attendance-type StudentAssessments for this student."""
         return self._get_student_assessments().filter(
-            assessment__course_assessment_type__assessment_type__name__iexact="attendance"
+            assessment__course_assessment_type__assessment_type__name__iexact=ASSESSMENT_TYPE_ATTENDANCE
         )
 
+    # Builds the metric calculator used by all metric properties below
+    # (grade_average, attendance_rate, missing_assignment_rate, risk_score, etc.).
     def _metric_calculator(self):
         """Get the metric calculator scoped to all of this student's assessments."""
         return StudentMetricCalculator(
@@ -76,31 +102,37 @@ class Student(models.Model):
             self.prior_academic_standing,
         )
 
+    # Custom property to return the student's grade average.
     @property
     def grade_average(self):
         """Average score across all graded academic assessments in all courses."""
         return self._metric_calculator().grade_average
 
+    # Custom property to return the student's attendance rate.
     @property
     def attendance_rate(self):
         """Average attendance score across all enrolled courses."""
         return self._metric_calculator().attendance_rate
 
+    # Custom property to return the student's missing assignment rate.
     @property
     def missing_assignment_rate(self):
         """Percentage of academic assessments marked missing across all courses."""
         return self._metric_calculator().missing_assignment_rate
 
+    # Custom property to return the student's assignment completion rate.
     @property
     def assignment_completion_rate(self):
         """Inverse of missing_assignment_rate."""
         return self._metric_calculator().assignment_completion_rate
 
+    # Custom property to return the student's risk score.
     @property
     def risk_score(self):
         """Weighted composite score out of 100 across all enrolled courses."""
         return self._metric_calculator().risk_score
 
+    # Custom property to return the student's risk band.
     @property
     def risk_band(self):
         """Categorize the student-level risk score into a band."""
@@ -113,6 +145,7 @@ class Student(models.Model):
         can only have values of 'excellent', 'great', 'average', or 'poor'
         """
 
+        # Python list containing valid values for prior_academic_standing.
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(
@@ -121,6 +154,3 @@ class Student(models.Model):
                 name="valid_prior_academic_standing",
             ),
         ]
-
-
-PRIOR_ACADEMIC_STANDING = PRIOR_ACADEMIC_STANDING_SCORES

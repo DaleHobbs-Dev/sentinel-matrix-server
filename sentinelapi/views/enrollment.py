@@ -1,4 +1,11 @@
-"""Views for handling enrollment-related API endpoints"""
+"""Views for Enrollment related actions/methods.
+
+Methods allowed by this ViewSet:
+    list   -- Lists all enrollments, optionally filtered by student or course; requires auth.
+    retrieve   -- Retrieves a specific enrollment by ID; requires auth.
+    create     -- Creates a new enrollment; requires auth.
+    destroy    -- Deletes an enrollment; requires auth.
+"""
 
 from rest_framework import viewsets, permissions, status, response
 from sentinelapi.models import Enrollment

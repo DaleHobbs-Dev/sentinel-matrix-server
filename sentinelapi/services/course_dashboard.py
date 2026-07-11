@@ -4,13 +4,14 @@ from sentinelapi.services.number_helpers import (
     _average_decimal_values,
 )
 
-
+# Risk order mapping for sorting enrollments by risk severity.
 RISK_ORDER = {
     "High Risk": 0,
     "Moderate Risk": 1,
 }
 
 
+# Method to build the course dashboard data structure for API responses.
 def build_course_dashboard(course):
     """Return serialized-ready course dashboard data."""
     enrollments = list(course.enrollments.all())
@@ -23,6 +24,7 @@ def build_course_dashboard(course):
     }
 
 
+# Method to build aggregate course metrics for a list of enrollments.
 def build_course_metrics(enrollments):
     """Return aggregate metric data for a course's enrollments."""
     grade_values = []
@@ -46,6 +48,7 @@ def build_course_metrics(enrollments):
     }
 
 
+# Method to build the instructor dashboard data structure for API responses.
 def build_instructor_dashboard(courses):
     """Return serialized-ready instructor dashboard data."""
     enrollments = get_course_enrollments(courses)
@@ -63,11 +66,13 @@ def build_instructor_dashboard(courses):
     }
 
 
+# Method to count enrollments that match a specific risk band.
 def count_risk_enrollments(enrollments, risk_band):
     """Count enrollments that match a risk band."""
     return sum(1 for enrollment in enrollments if enrollment.risk_band == risk_band)
 
 
+# Method to flatten all enrollment records from a list of courses.
 def get_course_enrollments(courses):
     """Flatten all enrollment records from a course list."""
     enrollments = []
@@ -76,6 +81,7 @@ def get_course_enrollments(courses):
     return enrollments
 
 
+# Method to retrieve high and moderate risk enrollments, sorted by severity.
 def get_risk_enrollments(enrollments):
     """Return high and moderate risk enrollments, sorted by severity."""
     risk_enrollments = [

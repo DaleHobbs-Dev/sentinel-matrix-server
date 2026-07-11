@@ -1,66 +1,18 @@
-"""Views for handling student assessment-related API endpoints"""
+"""Views for Student Assessment related actions/methods.
 
-from rest_framework import viewsets, permissions, status, serializers, response
-from sentinelapi.models import StudentAssessment, Assessment
+Methods allowed by this ViewSet:
+    list   -- Lists all student assessments, optionally filtered by enrollment or assessment; requires auth.
+    retrieve   -- Retrieves a specific student assessment by ID; requires auth.
+    create     -- Creates a new student assessment; requires auth.
+    update     -- Fully updates an existing student assessment; requires auth.
+    partial_update -- Partially updates an existing student assessment; requires auth.
+    _update    -- Internal method to handle both full and partial updates of a student assessment; requires auth.
+    destroy    -- Deletes a student assessment; requires auth.
+"""
 
-
-class AssessmentSerializer(serializers.ModelSerializer):
-    """Serializer for Assessment model"""
-
-    assessment_type_name = serializers.CharField(
-        source="course_assessment_type.assessment_type.name",
-        read_only=True,
-    )
-
-    class Meta:
-        model = Assessment
-        fields = [
-            "id",
-            "title",
-            "max_score",
-            "assessment_type_name",
-        ]
-        read_only_fields = [
-            "id",
-        ]
-
-
-class StudentAssessmentSerializer(serializers.ModelSerializer):
-    """Serializer for StudentAssessment model"""
-
-    assessment = serializers.PrimaryKeyRelatedField(queryset=Assessment.objects.all())
-
-    def to_representation(self, instance):
-        """Return expanded assessment details while accepting a student-assessment on writes."""
-        data = super().to_representation(instance)
-        data["assessment"] = AssessmentSerializer(instance.assessment).data
-        return data
-
-    def validate(self, attrs):
-        """Treat omitted scores on updates as missing submissions."""
-        score_was_provided = "score" in self.initial_data
-
-        if self.instance is not None and not score_was_provided:
-            attrs["score"] = None
-            attrs["completed_date"] = None
-            attrs["is_missing"] = True
-
-        return attrs
-
-    class Meta:
-        model = StudentAssessment
-        fields = [
-            "id",
-            "enrollment",
-            "assessment",
-            "score",
-            "is_missing",
-            "completed_date",
-            # "is_archived",  # Uncomment when soft delete is implemented
-        ]
-        read_only_fields = [
-            "id",
-        ]
+from rest_framework import viewsets, permissions, status, response
+from sentinelapi.models import StudentAssessment
+from sentinelapi.serializers import StudentAssessmentSerializer
 
 
 class StudentAssessmentViewSet(viewsets.ViewSet):
@@ -113,26 +65,18 @@ class StudentAssessmentViewSet(viewsets.ViewSet):
 
     def update(self, request, pk=None):
         """Handle PUT requests to fully update a student assessment."""
-        try:
-            student_assessment = StudentAssessment.objects.get(pk=pk)
-
-            serializer = StudentAssessmentSerializer(
-                student_assessment, data=request.data
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return response.Response(serializer.data, status=status.HTTP_200_OK)
-
-        except StudentAssessment.DoesNotExist:
-            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        return self._update(request, pk, partial=False)
 
     def partial_update(self, request, pk=None):
         """Handle PATCH requests to partially update a student assessment."""
+        return self._update(request, pk, partial=True)
+
+    def _update(self, request, pk, partial):
         try:
             student_assessment = StudentAssessment.objects.get(pk=pk)
 
             serializer = StudentAssessmentSerializer(
-                student_assessment, data=request.data, partial=True
+                student_assessment, data=request.data, partial=partial
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -144,15 +88,7 @@ class StudentAssessmentViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Handle DELETE requests to remove a student assessment.
 
-        Note: This is a hard delete for now. To implement soft delete later:
-            1. Add is_archived = models.BooleanField(default=False) to the model
-            2. Run migrations
-            3. Replace the hard delete below with:
-                student_assessment.is_archived = True
-                student_assessment.save()
-                return response.Response(status=status.HTTP_200_OK)
-            4. Update the list method to filter out archived records by default:
-                student_assessments = StudentAssessment.objects.filter(is_archived=False)
+        Note: This is a hard delete for now. I want to implement soft delete later
         """
         try:
             student_assessment = StudentAssessment.objects.get(pk=pk)
