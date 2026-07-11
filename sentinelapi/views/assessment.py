@@ -1,4 +1,15 @@
-"""Views for handling assessment-related API requests."""
+"""Views for Assessment related actions/methods.
+
+Methods allowed by this ViewSet:
+    list   -- Lists all assessments for the requesting instructor, optionally filtered by course or assessment type; requires auth.
+    retrieve   -- Retrieves a specific assessment by ID; requires auth.
+    create     -- Creates a new assessment; requires auth.
+    update     -- Fully updates an existing assessment; requires auth.
+    _update    -- Internal method to handle both full and partial updates of an assessment; requires auth.
+    partial_update -- Partially updates an existing assessment; requires auth.
+    destroy    -- Deletes an assessment; requires auth.
+    student_assessments   -- Lists all student assessments for a specific assessment; requires auth.
+"""
 
 from django.db import IntegrityError, transaction
 from django.db.models import Q
@@ -119,6 +130,91 @@ class AssessmentViewSet(viewsets.ViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def _resolve_update_target(self, assessment, student_assessments, item, index):
+        """Find the StudentAssessment (if any) that one update item refers to.
+
+        Returns a (data, instance, error_response) tuple. On success,
+        error_response is None and data/instance are ready to hand to a
+        serializer. On failure, data and instance are None and
+        error_response is the Response the caller should return immediately.
+        """
+        data = item.copy()
+        data["assessment"] = assessment.id
+
+        student_assessment_id = item.get("id")
+        enrollment_id = item.get("enrollment")
+
+        if student_assessment_id is not None:
+            try:
+                instance = student_assessments.get(pk=student_assessment_id)
+            except StudentAssessment.DoesNotExist:
+                return (
+                    None,
+                    None,
+                    Response(
+                        {
+                            "detail": (
+                                "Student assessment not found for this assessment."
+                            )
+                        },
+                        status=status.HTTP_404_NOT_FOUND,
+                    ),
+                )
+
+            if enrollment_id is not None and str(enrollment_id) != str(
+                instance.enrollment_id
+            ):
+                return (
+                    None,
+                    None,
+                    Response(
+                        {
+                            "detail": (
+                                f"student_assessments[{index}].enrollment does "
+                                "not match the student assessment."
+                            )
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    ),
+                )
+
+            data["enrollment"] = instance.enrollment_id
+            return data, instance, None
+
+        if enrollment_id is None:
+            return (
+                None,
+                None,
+                Response(
+                    {
+                        "detail": (
+                            f"student_assessments[{index}].id or "
+                            "enrollment is required."
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                ),
+            )
+
+        try:
+            enrollment = Enrollment.objects.get(
+                pk=enrollment_id,
+                course=assessment.course_assessment_type.course,
+            )
+        except Enrollment.DoesNotExist:
+            return (
+                None,
+                None,
+                Response(
+                    {"detail": "Enrollment not found for this assessment's course."},
+                    status=status.HTTP_404_NOT_FOUND,
+                ),
+            )
+
+        instance = student_assessments.filter(enrollment=enrollment).first()
+        data["enrollment"] = enrollment.id
+        return data, instance, None
+
     @action(detail=True, methods=["get", "patch"], url_path="student-assessments")
     def student_assessments(self, request, pk=None):
         """Retrieve or partially update student assessments for a specific assessment."""
@@ -165,72 +261,13 @@ class AssessmentViewSet(viewsets.ViewSet):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                data = student_assessment.copy()
-                data["assessment"] = assessment.id
-
-                student_assessment_id = student_assessment.get("id")
-                enrollment_id = student_assessment.get("enrollment")
-
-                if student_assessment_id is not None:
-                    try:
-                        student_assessment_instance = student_assessments.get(
-                            pk=student_assessment_id
-                        )
-                    except StudentAssessment.DoesNotExist:
-                        return Response(
-                            {
-                                "detail": (
-                                    "Student assessment not found for this assessment."
-                                )
-                            },
-                            status=status.HTTP_404_NOT_FOUND,
-                        )
-                    if (
-                        enrollment_id is not None
-                        and str(enrollment_id)
-                        != str(student_assessment_instance.enrollment_id)
-                    ):
-                        return Response(
-                            {
-                                "detail": (
-                                    f"student_assessments[{index}].enrollment does "
-                                    "not match the student assessment."
-                                )
-                            },
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-                    data["enrollment"] = student_assessment_instance.enrollment_id
-                else:
-                    if enrollment_id is None:
-                        return Response(
-                            {
-                                "detail": (
-                                    f"student_assessments[{index}].id or "
-                                    "enrollment is required."
-                                )
-                            },
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-
-                    try:
-                        enrollment = Enrollment.objects.get(
-                            pk=enrollment_id,
-                            course=assessment.course_assessment_type.course,
-                        )
-                    except Enrollment.DoesNotExist:
-                        return Response(
-                            {
-                                "detail": (
-                                    "Enrollment not found for this assessment's course."
-                                )
-                            },
-                            status=status.HTTP_404_NOT_FOUND,
-                        )
-
-                    student_assessment_instance = student_assessments.filter(
-                        enrollment=enrollment
-                    ).first()
-                    data["enrollment"] = enrollment.id
+                data, student_assessment_instance, error_response = (
+                    self._resolve_update_target(
+                        assessment, student_assessments, student_assessment, index
+                    )
+                )
+                if error_response is not None:
+                    return error_response
 
                 if data.get("is_missing") is True:
                     data["score"] = None

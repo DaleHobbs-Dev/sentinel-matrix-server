@@ -1,0 +1,151 @@
+"""Serializers for User and Instructor models.
+
+Serializers included in this module:
+    InstructorSerializer -- Serializes Instructor model data.
+    UserSerializer       -- Serializes public user data.
+    RegisterSerializer   -- Handles user + instructor registration.
+    LoginSerializer      -- Handles email/password login.
+"""
+
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import transaction
+from rest_framework import serializers
+from sentinelapi.models import Instructor
+
+User = get_user_model()
+
+
+class InstructorSerializer(serializers.ModelSerializer):
+    """Serializer for Instructor model."""
+
+    class Meta:
+        """Meta class for InstructorSerializer."""
+
+        model = Instructor
+        fields = ("id", "bio", "profile_picture", "subject_taught", "university")
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer for public user data."""
+
+    instructor = InstructorSerializer(read_only=True)
+
+    class Meta:
+        """Meta class for UserSerializer."""
+
+        model = User
+        fields = ("id", "email", "first_name", "last_name", "instructor")
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    """Serializer for instructor registration."""
+
+    bio = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    profile_picture = serializers.URLField(
+        required=False, allow_blank=True, allow_null=True
+    )
+    subject_taught = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+    university = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+
+    class Meta:
+        """Meta class for RegisterSerializer."""
+
+        model = User
+        fields = (
+            "password",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "profile_picture",
+            "subject_taught",
+            "university",
+        )
+        # Extra keyword arguments for fields in the serializer.
+        # This is needed to be able to tweak the behavior of individual fields,
+        # such as making them write-only or required.
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "email": {"required": True},
+            "first_name": {"required": True},
+            "last_name": {"required": True},
+        }
+
+    def validate_password(self, value):
+        """Perform password validation using Django's built-in validators."""
+        user = User(
+            email=self.initial_data.get("email"),
+            first_name=self.initial_data.get("first_name"),
+            last_name=self.initial_data.get("last_name"),
+        )
+        try:
+            validate_password(value, user=user)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
+
+    def validate_email(self, value):
+        """Perform case-insensitive email uniqueness validation."""
+        value = User.objects.normalize_email(value).lower()
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
+
+    def create(self, validated_data):
+        """Create a new user and associated instructor profile."""
+        instructor_data = {
+            "bio": validated_data.pop("bio", None),
+            "profile_picture": validated_data.pop("profile_picture", None),
+            "subject_taught": validated_data.pop("subject_taught", None),
+            "university": validated_data.pop("university", None),
+        }
+        password = validated_data.pop("password")
+
+        with transaction.atomic():
+            user = User.objects.create_user(password=password, **validated_data)
+            Instructor.objects.create(user=user, **instructor_data)
+
+        return user
+
+
+class LoginSerializer(serializers.Serializer):
+    """Serializer for email/password login."""
+
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, trim_whitespace=False)
+
+    # Validate is a method that is automatically called during serializer validation.
+    # attrs is a dictionary of the incoming data after it has been validated by individual field validators.
+    def validate(self, attrs):
+        """Validate email and password for login."""
+
+        # instance of UserManager attached to the User model is used to normalize the email.
+        # This is essentially a call to a method on the class's manager to normalize the email.
+        email = User.objects.normalize_email(attrs.get("email")).lower()
+        user = authenticate(
+            request=self.context.get("request"),
+            email=email,
+            password=attrs.get("password"),
+        )
+
+        if user is None:
+            raise serializers.ValidationError(
+                "Unable to log in with provided credentials."
+            )
+        if not user.is_active:
+            raise serializers.ValidationError("This account is inactive.")
+
+        attrs["user"] = user
+        return attrs
+
+    class Meta:
+        fields = [
+            "email",
+            "password",
+        ]

@@ -1,4 +1,16 @@
-"""Views for handling Assessment_Type related API requests"""
+"""Views for Assessment Type related actions/methods and API endpoints.
+
+Methods allowed by this ViewSet:
+    list   -- Lists all assessment types; requires auth.
+    retrieve   -- Retrieves a specific assessment type by ID; requires auth.
+    create     -- Creates a new assessment type; requires auth.
+    update     -- Fully updates an existing assessment type; requires auth.
+    _update    -- Internal method to handle both full and partial updates of an assessment type; requires auth.
+    partial_update -- Partially updates an existing assessment type; requires auth.
+    destroy    -- Deletes an assessment type; requires auth.
+
+Note: There is no current way in the client to manage assessment types; all actions must be performed via the API.
+"""
 
 from rest_framework import permissions, viewsets, status, serializers
 from rest_framework.response import Response
@@ -62,31 +74,14 @@ class AssessmentTypeViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
-        """
-        Update an existing assessment type.
-        """
-        try:
-            assessment_type = AssessmentType.objects.get(pk=pk)
-        except AssessmentType.DoesNotExist:
-            return Response(
-                {"detail": "Assessment type not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        serializer = AssessmentTypeSerializer(assessment_type, data=request.data)
-        if serializer.is_valid():
-            try:
-                serializer.save()
-                return Response(serializer.data)
-            except IntegrityError:
-                return Response(
-                    {"detail": "Assessment type with this name already exists."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        """Update an existing assessment type."""
+        return self._update(request, pk, partial=False)
 
     def partial_update(self, request, pk=None):
         """Partially update an existing assessment type."""
+        return self._update(request, pk, partial=True)
+
+    def _update(self, request, pk, partial):
         try:
             assessment_type = AssessmentType.objects.get(pk=pk)
         except AssessmentType.DoesNotExist:
@@ -96,7 +91,7 @@ class AssessmentTypeViewSet(viewsets.ViewSet):
             )
 
         serializer = AssessmentTypeSerializer(
-            assessment_type, data=request.data, partial=True
+            assessment_type, data=request.data, partial=partial
         )
         serializer.is_valid(raise_exception=True)
 

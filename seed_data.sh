@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 rm -f db.sqlite3

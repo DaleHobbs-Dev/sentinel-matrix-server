@@ -2,7 +2,10 @@
 
 from decimal import Decimal
 
-from sentinelapi.constants import PRIOR_ACADEMIC_STANDING_SCORES
+from sentinelapi.constants import (
+    ASSESSMENT_TYPE_ATTENDANCE,
+    PRIOR_ACADEMIC_STANDING_SCORES,
+)
 
 
 class StudentMetricCalculator:
@@ -15,18 +18,22 @@ class StudentMetricCalculator:
     def _get_academic_assessments(self):
         """Get all non-attendance-type StudentAssessments in this scope."""
         return self.assessments.exclude(
-            assessment__course_assessment_type__assessment_type__name__iexact="attendance"
+            assessment__course_assessment_type__assessment_type__name__iexact=ASSESSMENT_TYPE_ATTENDANCE
         )
 
     def _get_attendance_assessments(self):
         """Get all attendance-type StudentAssessments in this scope."""
         return self.assessments.filter(
-            assessment__course_assessment_type__assessment_type__name__iexact="attendance"
+            assessment__course_assessment_type__assessment_type__name__iexact=ASSESSMENT_TYPE_ATTENDANCE
         )
 
+    # Method to calculate grade average.
+    # As a property, it can be accessed like an attribute (so no need to call it like a method)
     @property
     def grade_average(self):
         """Average score across all graded academic assessments in this scope."""
+
+        # Retrieve all academic assessments that have a score
         graded = self._get_academic_assessments().filter(score__isnull=False)
 
         if not graded.exists():
@@ -43,6 +50,8 @@ class StudentMetricCalculator:
     @property
     def attendance_rate(self):
         """Average attendance score in this scope."""
+
+        # Retrieve all attendance assessments that have a score
         graded = self._get_attendance_assessments().filter(score__isnull=False)
 
         if not graded.exists():

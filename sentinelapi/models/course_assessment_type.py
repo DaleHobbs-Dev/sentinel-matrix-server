@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from sentinelapi.constants import ASSESSMENT_TYPE_ATTENDANCE
 from .assessment_type import AssessmentType
 
 
@@ -46,7 +47,7 @@ class CourseAssessmentType(models.Model):
     @classmethod
     def fixed_risk_score_weight_for(cls, assessment_type_name):
         """Return the MVP risk score weight for an assessment type name."""
-        if assessment_type_name.lower() == "attendance":
+        if assessment_type_name.lower() == ASSESSMENT_TYPE_ATTENDANCE:
             return cls.ATTENDANCE_RISK_SCORE_WEIGHT
 
         return cls.ACADEMIC_RISK_SCORE_WEIGHT

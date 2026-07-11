@@ -3,6 +3,7 @@
 from django.db import models
 from .course import Course
 from .student import Student
+from sentinelapi.constants import ASSESSMENT_TYPE_ATTENDANCE
 from sentinelapi.services.student_metrics import StudentMetricCalculator
 
 
@@ -27,13 +28,13 @@ class Enrollment(models.Model):
     def _get_academic_assessments(self):
         """Helper function to get all non-attendance-type StudentAssessments"""
         return self.student_assessments.exclude(
-            assessment__course_assessment_type__assessment_type__name__iexact="attendance"
+            assessment__course_assessment_type__assessment_type__name__iexact=ASSESSMENT_TYPE_ATTENDANCE
         )
 
     def _get_attendance_assessments(self):
         """Helper function to get all attendance-type StudentAssessments"""
         return self.student_assessments.filter(
-            assessment__course_assessment_type__assessment_type__name__iexact="attendance"
+            assessment__course_assessment_type__assessment_type__name__iexact=ASSESSMENT_TYPE_ATTENDANCE
         )
 
     @property

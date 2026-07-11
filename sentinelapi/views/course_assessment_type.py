@@ -1,10 +1,19 @@
-"""Views for handling course-specific assessment type configuration."""
+"""Views for Course Assessment Type related actions/methods.
+
+Methods allowed by this ViewSet:
+    list   -- Lists all course assessment type configurations for the requesting instructor, optionally filtered by course or assessment type; requires auth.
+    retrieve   -- Retrieves a specific course assessment type configuration by ID; requires auth.
+    create     -- Creates a new course assessment type configuration; requires auth.
+    update     -- Fully updates an existing course assessment type configuration; requires auth.
+    partial_update -- Partially updates an existing course assessment type configuration; requires auth.
+    _update    -- Internal method to handle both full and partial updates of a course assessment type configuration; requires auth.
+    destroy    -- Deletes a course assessment type configuration; requires auth.
+"""
 
 from django.db import IntegrityError
 from django.db.models import Q
 from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.response import Response
-
 from sentinelapi.models import CourseAssessmentType
 
 
