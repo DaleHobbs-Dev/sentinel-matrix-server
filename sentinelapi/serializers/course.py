@@ -49,6 +49,7 @@ class CourseDashboardStudentSerializer(serializers.Serializer):
     grade_average = serializers.SerializerMethodField()
     attendance_rate = serializers.SerializerMethodField()
     missing_assignment_count = serializers.SerializerMethodField()
+    risk_score = serializers.SerializerMethodField()
     risk_band = serializers.ReadOnlyField()
 
     def get_grade_average(self, obj):
@@ -63,6 +64,10 @@ class CourseDashboardStudentSerializer(serializers.Serializer):
         """Get the count of missing assignments for the student associated with the enrollment."""
         return obj._get_academic_assessments().filter(is_missing=True).count()
 
+    def get_risk_score(self, obj):
+        """Get the enrollment's risk score."""
+        return _decimal_to_float(obj.risk_score)
+
     class Meta:
         model = Enrollment
         fields = [
@@ -74,6 +79,7 @@ class CourseDashboardStudentSerializer(serializers.Serializer):
             "grade_average",
             "attendance_rate",
             "missing_assignment_count",
+            "risk_score",
             "risk_band",
         ]
 
